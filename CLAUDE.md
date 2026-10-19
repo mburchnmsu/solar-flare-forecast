@@ -5,7 +5,9 @@ previous 3 h, trained with a physics-informed loss (cooling-time decay bound, qu
 gradual-phase convexity). Independent CV project; validated on synthetic telemetry before real NOAA data.
 
 - Setup cell for every notebook: `include(raw"C:\JuliaProjects\SolarFlareForcast\sol_setup.jl")`. Package code: `src/`.
-- Records: dated notebooks at the root (`SolMMDDYYYY.ipynb`), `sweeps/REPORT*.md`, `figures/`.
+- Records: dated notebooks in `notebooks/` (`SolMMDDYYYY.ipynb`, flat; setup cell
+  `include(joinpath(@__DIR__, "..", "sol_setup.jl"))`; one line each in `notebooks/README.md`),
+  `sweeps/REPORT*.md`, `figures/`.
   `SolOnboarding.ipynb` is the background/orientation notebook.
 - Notebook changes: give the user paste-ready cells; don't edit an .ipynb they have open.
 - Experiments: `sweeps/train_variant.jl <tag> <seed>` (+ `run_pool.sh` for parallel jobs), `sweeps/analyze.jl`.

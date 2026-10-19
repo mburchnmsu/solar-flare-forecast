@@ -64,14 +64,16 @@ end
 """
     prepare_data(df; W = 180, H = 60, fractions = (0.70, 0.15), train_stride = 3, eval_stride = 1)
 
-Chronological split → fit standardiser on the training rows only → windows per split.
+Chronological split (row fractions, or `split_times = (val_start, test_start)` DateTimes) → fit standardiser on
+the training rows only → windows per split.
 A guard gap of W + H rows between splits removes look-ahead leakage from overlapping windows.
 """
 function prepare_data(df::AbstractDataFrame; W::Int = 180, H::Int = 60, fractions = (0.70, 0.15),
-                      train_stride::Int = 3, eval_stride::Int = 1)
+                      split_times = nothing, train_stride::Int = 3, eval_stride::Int = 1)
     T = nrow(df)
-    n_tr = floor(Int, fractions[1] * T)
-    n_va = floor(Int, fractions[2] * T)
+    # split either by row fractions or, for real data, at two timestamps (val start, test start)
+    n_tr = split_times === nothing ? floor(Int, fractions[1] * T) : searchsortedfirst(df.time, split_times[1]) - 1
+    n_va = split_times === nothing ? floor(Int, fractions[2] * T) : searchsortedfirst(df.time, split_times[2]) - 1 - n_tr
     gap = W + H
     rows = (train = 1:n_tr, val = (n_tr + gap + 1):(n_tr + n_va), test = (n_tr + n_va + gap + 1):T)
 

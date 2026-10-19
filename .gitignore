@@ -5,3 +5,4 @@ results/demo_*
 *.cov
 *.mem
 figures/demo_*
+data/ncei/

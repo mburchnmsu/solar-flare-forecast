@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-19 07:01, DESKTOP-BBASC81
+Updated: 2026-10-19 12:38, DESKTOP-BBASC81
 
 ## Headline
 Sweep 1 done (λ sweep + 3 seeds). On synthetic data the physics-loss CNN is the best X-ray forecaster (−14% RMSE vs persistence, −2% vs plain CNN), but zero-shot on real SWPC data it is 5% worse than persistence. Real-data validation is the next priority.
@@ -21,12 +21,12 @@ Synthetic test split (last 13.5 of 90 days), mean ± std over 3 seeds, RMSE in d
 Zero-shot, real SWPC 7-day data (2026-10-12 → 10-19, max M1.4), X-ray RMSE: persistence 0.164, CNN 0.161, physics 0.173.
 
 ## Running now
-Nothing.
+- Per-channel λ (proton terms × 0.1 / 0.01 / 0) + single-term ablations at λ = 1e4: 6 synthetic runs, 2 workers, started 12:20, expected ~14:30.
+- Download of GOES-16 NCEI L2 data 2022-01 → 2025-03 (~2.8 GB, network only), expected ~15:00.
 
 ## Waiting on user
-- CLAUDE.md says dated notebooks live at the root; they're in notebooks/ now. Update it?
-- Next compute (needs OK, Zodi has priority): per-channel λ + per-term ablation, ~8 runs, 2 workers × ~2 h.
-- Direction: train on real NCEI GOES data next (adds NCDatasets.jl, a few GB of disk)?
+Nothing. Approved today: CLAUDE.md notebook path (done), the 2-worker ablation run, real-data training.
 
 ## Next up
-Real-data quality control (eclipse/dropout masking), per-channel λ, gate the convexity prior by flare/background ratio, then real-data training. Details: sweeps/REPORT.md, SolOnboarding.ipynb §6–7.
+Real-data training on GOES-16 (train 2022–23, val 2024 H1, test 2024-07 → 2025-03): MSE vs physics vs fine-tuned-from-synthetic, 2 workers.
+Real-data loader validated: XRS-B matches SWPC real-time to 0.001 dex (median); reconstructed ≥10 MeV SEP peaks vs NOAA's 2024 event list: median ratio 1.19, scatter 0.22 dex (n = 8).

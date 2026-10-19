@@ -45,7 +45,7 @@ last observed sample prepended so the jump from "now" into the forecast is const
 * `decay`  — **cooling bound.** A flaring loop cannot fade faster than its fastest radiative/conductive
   cooling time, so d(log10 F)/dt ≥ -1/(τ_cool ln 10). Rises are left free: the impulsive phase can be
   arbitrarily fast. Protons get the same one-sided bound with the much longer `τ_sep_min`, since SEP fluxes
-  fade over hours as particles escape and diffuse.
+  fade over hours as particles escape and diffuse. `proton_scale` weights the proton parts relative to the X-ray ones.
 * `rough`  — **quiescent curvature.** Squared second difference of the X-ray forecast, weighted by a soft
   "quiet" gate computed from the input window (30-min range < `quiet_dex`). This kills high-frequency
   artifacts on a quiet background but does not damp genuine flare rises. Protons are always smooth at 1-min.
@@ -59,6 +59,7 @@ Base.@kwdef struct PhysicsLoss
     λ_rough::Float32 = 0f0
     λ_convex::Float32 = 0f0
     λ_naive::Float32 = 0f0
+    proton_scale::Float32 = 1f0      # multiplies the proton parts of decay & rough (per-channel weighting)
     τ_cool_min::Float32 = 5f0
     τ_sep_min::Float32 = 180f0
     quiet_dex::Float32 = 0.15f0
@@ -88,11 +89,11 @@ function physics_terms(L::PhysicsLoss, ŷ, x, σ::Vector{Float32})
     dp = zp[2:end, :] .- zp[1:end-1, :]
     rx = 1f0 / (L.τ_cool_min * log(10f0))
     rp = 1f0 / (L.τ_sep_min * log(10f0))
-    decay = mean(abs2, relu.(-dx .- rx)) + mean(abs2, relu.(-dp .- rp))
+    decay = mean(abs2, relu.(-dx .- rx)) + L.proton_scale * mean(abs2, relu.(-dp .- rp))
     # curvature only inside the forecast: the last observation is noisy and the forecast should not chase it
     cx = dx[3:end, :] .- dx[2:end-1, :]                       # dex / min²
     cp = dp[3:end, :] .- dp[2:end-1, :]
-    rough = mean(quiet .* abs2.(cx)) + mean(abs2, cp)
+    rough = mean(quiet .* abs2.(cx)) + L.proton_scale * mean(abs2, cp)
     convex = mean(decaying .* abs2.(relu.(-cx)))
     naive = mean(abs2, ŷ[2:end, :, :] .- ŷ[1:end-1, :, :])
     return (; decay, rough, convex, naive)

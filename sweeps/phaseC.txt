@@ -1,0 +1,6 @@
+physp_1e4_0.1 1
+physp_1e4_0.01 1
+physp_1e4_0 1
+decay_1e4 1
+rough_1e4 1
+convex_1e4 1

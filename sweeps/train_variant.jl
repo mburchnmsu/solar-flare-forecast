@@ -17,6 +17,8 @@ group, loss = parse_variant(tag)
 df, events, data, Zclean = sweep_data()
 model, hist = train_model(data, loss; epochs, seed, patience = 6, label = "$(tag)/s$(seed)")
 mkpath(out)
-serialize(joinpath(out, "run.jls"), (; tag, seed, group, loss, history = hist, state = Flux.state(model),
+# loss stored as a NamedTuple so later changes to the PhysicsLoss struct never break old run files
+lossnt = NamedTuple{fieldnames(PhysicsLoss)}(Tuple(getfield(loss, f) for f in fieldnames(PhysicsLoss)))
+serialize(joinpath(out, "run.jls"), (; tag, seed, group, loss = lossnt, history = hist, state = Flux.state(model),
                                       pred_val = predict(model, data.val.X), pred_test = predict(model, data.test.X)))
 println("DONE ", tag, " seed ", seed)

@@ -18,9 +18,11 @@ Same seed ⇒ same initial weights and batch order for every loss variant, so ab
 The checkpoint with the lowest validation MSE (data fit only, identical for all variants) is restored at the end.
 """
 function train_model(data, loss::PhysicsLoss; epochs::Int = 30, batchsize::Int = 256, lr = 1f-3,
-                     seed::Int = 1, patience::Int = 6, verbose::Bool = true, label = "model")
+                     seed::Int = 1, patience::Int = 6, verbose::Bool = true, label = "model",
+                     init_state = nothing)
     rng = Xoshiro(seed)
     model = build_model(data.W, data.H; rng)
+    init_state === nothing || Flux.loadmodel!(model, init_state)       # fine-tune from a saved model
     opt = Flux.setup(OptimiserChain(ClipNorm(1f0), Adam(Float32(lr))), model)
     loader = Flux.DataLoader((data.train.X, data.train.Y); batchsize, shuffle = true, rng)
     σ = data.scaler.σ
