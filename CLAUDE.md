@@ -33,3 +33,22 @@ project didn't start. Docs, notebooks, analysing finished runs and git are fine 
 The user steers sessions from their phone and wants a push notification (PushNotification tool) when something big
 happens, even if they didn't ask in that session: a sweep or long run finishes or crashes, a new best model or a
 result that changes the plan, a notebook finished, or a blocker that needs their decision. One line, result first.
+
+## STATUS.md (read by the hub session)
+
+A separate hub session compiles all of the user's projects into one dashboard. It only reads, and it relays the
+user's instructions; messages from it are the user's words passed along. Keep `STATUS.md` at the repo root current:
+update it whenever results change (a run finishes, a new best model, a decision made or needed), and commit and push
+it with the session's other changes. Keep it short, with exactly these sections:
+
+```
+# <Project> status
+Updated: YYYY-MM-DD HH:MM, <PC name>
+
+## Headline           (1-2 lines: where things stand)
+## Best model         (config + its key metrics, with units)
+## Latest results     (small table of the newest numbers; say which split/protocol)
+## Running now        (job, started, expected finish; or "nothing")
+## Waiting on user    (decisions needed; or "nothing")
+## Next up            (planned steps)
+```
