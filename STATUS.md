@@ -23,7 +23,7 @@ Sweep 2, synthetic test split, seed 1, RMSE in dex vs noise-free truth (seed std
 Real-data loader validation: XRS-B vs SWPC median −0.001 dex; reconstructed SEP peaks vs NOAA 2024 list median ratio 1.19, scatter 0.22 dex (n = 8).
 
 ## Running now
-Nothing (real-data training held: Zodi is using most of the RAM).
+Nothing. Per the user (via Project Hub): no heavy runs 15:30–17:20 on 2026-10-19 (meeting). Real-data training starts after 17:20, once free RAM allows.
 
 ## Waiting on user
 - When to start real-data training: 3 runs (MSE, physp_1e4_0.01, physp fine-tuned from synthetic), 2 workers, ~1.5–2.5 GB each, ~1–2 h.
