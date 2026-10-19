@@ -1,0 +1,5 @@
+sweeps/results/
+results/*.jls
+.ipynb_checkpoints/
+*.cov
+*.mem

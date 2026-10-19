@@ -1,0 +1,8 @@
+mse 1
+naive_0.3 1
+naive_3 1
+naive_30 1
+phys_1e3 1
+phys_1e4 1
+phys_1e5 1
+phys_1e6 1
