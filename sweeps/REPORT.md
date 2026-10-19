@@ -91,3 +91,52 @@ Scored against observations.
 * Relax or gate the convexity prior by flare-to-background ratio (it's only strictly right when background matters).
 * Real-data training on the NCEI GOES-R archive with quality flags; pre-train on synthetic, then fine-tune.
 * Probabilistic outputs (quantile loss) and reliability diagrams.
+
+---
+
+# Sweep 2: per-channel weighting and per-term ablation (2026-10-19)
+
+All at λ = 1e4, seed 1, the same data and protocol as sweep 1 (test split, RMSE vs noise-free truth, dex). Seed-to-seed
+std from sweep 1 is ~0.0008 dex on X-ray RMSE, so gaps below ~0.001 are not resolved.
+
+| Variant | val MSE | X-ray | X-ray active | Protons | Quiet roughness | Cooling violations | TSS ≥M |
+|---|---|---|---|---|---|---|---|
+| Persistence | 0.1283 | 0.268 | 0.377 | 0.060 | 0 | 0 | 0.391 |
+| CNN, MSE only (3 seeds) | 0.0994 | 0.2356 | 0.294 | 0.057 | 6.6e-4 | 0 | 0.384 |
+| Physics, shared λ (3 seeds) | 0.0963 | 0.2303 | 0.282 | 0.060 | 1.5e-4 | 0 | 0.399 |
+| Physics, proton terms × 0.1 | 0.0972 | 0.2301 | 0.282 | 0.059 | 1.9e-4 | 0 | 0.395 |
+| **Physics, proton terms × 0.01** | 0.0966 | **0.2293** | **0.278** | **0.056** | 3.4e-4 | 0 | 0.402 |
+| Physics, proton terms × 0 | 0.0975 | 0.2302 | 0.279 | 0.056 | 2.9e-4 | 0 | 0.414 |
+| Cooling bound only | 0.0992 | 0.2367 | 0.296 | 0.060 | 3.5e-4 | 0 | 0.391 |
+| Quiet curvature only | **0.0956** | 0.2295 | 0.279 | 0.060 | 2.0e-4 | 0 | 0.388 |
+| Decay convexity only | 0.0993 | 0.2338 | 0.288 | 0.056 | 1.4e-3 | 0.11% | 0.400 |
+
+**Findings**
+1. **Per-channel weighting fixes the proton collapse.** Scaling the proton penalties by 0.01 (or 0) brings proton RMSE
+   from 0.060 (persistence) to 0.056, better than the plain CNN, while keeping the full X-ray gain.
+2. **The quiet-curvature term does the work.** On its own it reproduces the whole X-ray improvement and has the best
+   validation MSE. It still collapses protons, because its proton part runs at full weight.
+3. **The cooling bound is inert on synthetic data:** within noise of no penalty, consistent with sweep 1's
+   zero violations. It stays in as a guard-rail for real data, not as a source of skill.
+4. **Convexity alone is harmful to smoothness** (2× rougher than the plain CNN, and the only physics term that
+   breaks the cooling bound). It is only sensible together with the curvature term, and its prior is wrong for
+   flares far above background (see sweep 1's real-data panels).
+
+**Choice for real-data training:** `physp_1e4_0.01` (best X-ray and proton test numbers among the physics variants;
+validation within noise of `rough_1e4`, and unlike it, it doesn't collapse protons).
+
+# Real data: NCEI GOES-16 L2 (2026-10-19)
+
+* `load_ncei` merges XRS-B (eclipse- and bad-flagged minutes dropped) and ≥10 MeV protons reconstructed from SGPS
+  (bin sum of differential channels above 10 MeV + the >500 MeV channel, mean of both heads).
+* **XRS validation** (GOES-18, 2026-10-13 → 18, 8,487 matched minutes vs SWPC real-time): median log ratio −0.001 dex,
+  5–95% range −0.019 … +0.013, log-correlation 0.996.
+* **Proton validation** vs NOAA SWPC's official 2024 SEP list (8 events, 20–1810 pfu): reconstructed peak / listed
+  peak median 1.19, scatter 0.22 dex. Peak times agree to within minutes for 6 of 8 events. The two hardest events
+  (May 10, Oct 10) are ~2× high. At quiet times (~0.3 pfu) the reconstruction reads ~0.25 dex above SWPC; this is
+  background-dominated and far below the 10 pfu S1 threshold. (`results/sep_peak_validation.csv`, `figures/ncei_vs_swpc.png`)
+* **Dataset:** GOES-16, 2022-01-01 → 2025-03-31, 1.51 M quality-filtered minutes (88.7%). Science-quality SGPS files
+  start 2022-04-25 (earlier months only have `dn_` v2 files, which are not used), so proton-covered training data
+  effectively starts there. XRS-B max X8.9, protons ≥10 pfu in 3.8% of minutes.
+* **Planned split:** train → 2023-12-31, validate 2024-01 → 06, test 2024-07 → 2025-03 (includes the Oct 2024 X-flares
+  and the 1810 pfu event). Real-data training is on hold until the Zodi project frees memory.
