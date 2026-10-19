@@ -1,5 +1,7 @@
 sweeps/results/
 results/*.jls
+results/demo_*
 .ipynb_checkpoints/
 *.cov
 *.mem
+figures/demo_*

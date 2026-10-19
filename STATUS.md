@@ -1,29 +1,32 @@
 # SolarFlareForcast status
-Updated: 2026-10-18 21:31, DESKTOP-BBASC81
+Updated: 2026-10-18 22:40, DESKTOP-BBASC81
 
 ## Headline
-Physics-constrained 1D-CNN forecasts the next 60 min of GOES X-ray and ≥10 MeV proton flux (synthetic data so far). The physics loss beats persistence and the plain CNN on X-rays, but in seed-1 results it collapses the proton forecast to persistence.
+Sweep 1 done (λ sweep + 3 seeds). On synthetic data the physics-loss CNN is the best X-ray forecaster (−14% RMSE vs persistence, −2% vs plain CNN), but zero-shot on real SWPC data it is 5% worse than persistence. Real-data validation is the next priority.
 
 ## Best model
-`phys_1e4`: residual 1D-CNN (W=180 min → H=60 min) + cooling-bound/quiet-curvature/convexity loss, λ=1e4 (chosen on validation).
-Test (seed 1): X-ray RMSE 0.231 dex (persistence 0.268, plain CNN 0.235); quiet-time roughness 3.1e-5 dex/min² (plain CNN 7.6e-4); M-class TSS 0.40.
+`phys_1e4`: residual 1D-CNN (180 min in → 60 min out) + cooling-bound / quiet-curvature / convexity loss, λ = 1e4 (chosen on validation).
+Synthetic test, 3 seeds: X-ray RMSE 0.2303 ± 0.0008 dex (persistence 0.268, plain CNN 0.2356 ± 0.0002); active periods 0.282 dex (persistence 0.377); quiet roughness −77% vs plain CNN; TSS ≥M 0.399.
 
 ## Latest results
-Test split (last 13.5 of 90 synthetic days), seed 1, RMSE vs noise-free truth in dex:
+Synthetic test split (last 13.5 of 90 days), mean ± std over 3 seeds, RMSE in dex vs noise-free truth:
 
-| Model | X-ray | X-ray active | Protons | Quiet roughness | TSS ≥M |
-|---|---|---|---|---|---|
-| Persistence | 0.268 | 0.377 | 0.060 | 0 | 0.39 |
-| CNN (MSE) | 0.235 | 0.292 | 0.054 | 7.6e-4 | 0.38 |
-| CNN + naive smoothing (λ=30) | 0.235 | 0.291 | 0.057 | 6.0e-4 | 0.32 |
-| CNN + physics loss (λ=1e4) | 0.231 | 0.285 | 0.060 | 3.1e-5 | 0.40 |
+| Model | X-ray | X-ray active | Protons | TSS ≥M |
+|---|---|---|---|---|
+| Persistence | 0.268 | 0.377 | 0.060 | 0.391 |
+| CNN (MSE) | 0.2356 ± 0.0002 | 0.294 | 0.057 | 0.384 |
+| CNN + naive smoothing (λ=30) | 0.2354 ± 0.0003 | 0.294 | 0.058 | 0.308 |
+| CNN + physics loss (λ=1e4) | 0.2303 ± 0.0008 | 0.282 | 0.060 | 0.399 |
+
+Zero-shot, real SWPC 7-day data (2026-10-12 → 10-19, max M1.4), X-ray RMSE: persistence 0.164, CNN 0.161, physics 0.173.
 
 ## Running now
-Seeds 2–3 of the three chosen models (2 workers, started 21:31, expected done ~23:30), then final analysis + zero-shot test on live SWPC data.
+Nothing.
 
 ## Waiting on user
-- CLAUDE.md still says dated notebooks live at the root (they're in notebooks/ now). Update it?
-- Proton penalty needs its own λ (follow-up run, 2 workers × ~1 h). Run it?
+- CLAUDE.md says dated notebooks live at the root; they're in notebooks/ now. Update it?
+- Next compute (needs OK, Zodi has priority): per-channel λ + per-term ablation, ~8 runs, 2 workers × ~2 h.
+- Direction: train on real NCEI GOES data next (adds NCDatasets.jl, a few GB of disk)?
 
 ## Next up
-Multi-seed summary → sweeps/REPORT.md, README, finish SolOnboarding.ipynb (results/kinks/future work), CV bullets; commit + push.
+Real-data quality control (eclipse/dropout masking), per-channel λ, gate the convexity prior by flare/background ratio, then real-data training. Details: sweeps/REPORT.md, SolOnboarding.ipynb §6–7.
