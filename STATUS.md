@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-18 22:40, DESKTOP-BBASC81
+Updated: 2026-10-19 07:01, DESKTOP-BBASC81
 
 ## Headline
 Sweep 1 done (λ sweep + 3 seeds). On synthetic data the physics-loss CNN is the best X-ray forecaster (−14% RMSE vs persistence, −2% vs plain CNN), but zero-shot on real SWPC data it is 5% worse than persistence. Real-data validation is the next priority.
