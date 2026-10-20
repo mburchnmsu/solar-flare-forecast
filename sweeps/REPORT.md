@@ -140,3 +140,33 @@ validation within noise of `rough_1e4`, and unlike it, it doesn't collapse proto
   effectively starts there. XRS-B max X8.9, protons ≥10 pfu in 3.8% of minutes.
 * **Planned split:** train → 2023-12-31, validate 2024-01 → 06, test 2024-07 → 2025-03 (includes the Oct 2024 X-flares
   and the 1810 pfu event). Real-data training is on hold until the Zodi project frees memory.
+
+# Real-data training: GOES-16, sweep R1 (2026-10-19)
+
+Trained on real NCEI GOES-16 data (2022-04-25 → 2023-12-31; 165,824 windows at a 5-min stride). Early-stopped on
+2024-01 → 06 (48,124 windows). Scored once on **2024-07 → 2025-03** (71,876 windows; includes the Oct 2024 X9.0 and
+the 1810 pfu SEP). Scored against observations (no noise-free truth for real data). Seed 1 only, so these are
+single-run numbers.
+
+| Model | val MSE (dex²) | epochs | X-ray RMSE | X-ray active | X-ray quiet | Protons | Quiet roughness | TSS ≥M | TSS new ≥M | TSS S1 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Persistence | – | – | 0.178 | 0.228 | 0.147 | 0.159 | 0 | 0.329 | 0 | 0.882 |
+| CNN, MSE only | 0.0208 | 10 | 0.158 | 0.183 | 0.144 | **0.118** | 5.6e-4 | 0.337 | 0.018 | **0.928** |
+| **CNN + physics (λ=1e4, proton × 0.01)** | **0.0203** | 14 | **0.155** | **0.179** | **0.141** | 0.119 | **2.9e-4** | **0.352** | **0.036** | 0.890 |
+
+**Findings**
+1. **Trained on real data, the physics loss helps.** X-ray RMSE is −13% vs persistence (−21% in active periods) and
+   −1.9% vs the same CNN without it, about the same relative gain as on synthetic data. It also halves quiet-time
+   roughness and has the best M-class TSS. Last night's zero-shot failure was a *domain-gap* problem, not a problem
+   with the constraint itself.
+2. **Same regularisation signature as on synthetic data.** The MSE-only CNN starts overfitting after ~5 epochs
+   (val MSE rises from epoch 5 to 10); the physics model keeps improving to epoch ~9 and stops at 14.
+3. **Protons:** both CNNs beat persistence by ~26% (0.118–0.119 vs 0.159 dex). The MSE-only model has the better S1
+   threshold skill (0.93 vs 0.89), so the physics prior is neutral-to-slightly-negative for protons on real data.
+4. **Cooling bound:** violation rates are ~2e-6 for both models, so it barely binds on real data either.
+5. **Known failure:** the biggest flares. On the Oct 2024 X9 both models decay too slowly. On a rapidly rising
+   event both turn over too early (`figures/real_forecast_examples.png`).
+
+**Not yet run (needs the user's OK):** the fine-tuned-from-synthetic variant (`physp_1e4_0.01` initialised from
+`physp_1e4_0.01_s1`), and seeds 2–3 of both models for error bars. Run these one worker at a time: two workers loading the
+1.5 M-minute dataset at once pushed the PC low on RAM.

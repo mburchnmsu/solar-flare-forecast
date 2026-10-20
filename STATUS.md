@@ -1,32 +1,27 @@
 # SolarFlareForcast status
-Updated: 2026-10-19 21:04, DESKTOP-BBASC81
+Updated: 2026-10-19 21:32, DESKTOP-BBASC81
 
 ## Headline
-Synthetic sweeps done: the per-channel physics loss is best on both channels (X-ray −14% vs persistence, protons now below persistence), and the ablation shows the quiet-curvature term does the work. A validated real-data set (GOES-16 NCEI, 2022–25) is ready; real-data training is waiting for memory while Zodi runs.
+First real-data result: trained on GOES-16 (2022–23) and tested on Jul 2024 – Mar 2025, the physics-loss CNN beats persistence by 13% on X-ray flux (21% during flares) and the plain CNN by 2%, and halves quiet-time roughness. Single seed so far.
 
 ## Best model
-`physp_1e4_0.01`: residual 1D-CNN (180 min → 60 min) + physics loss at λ = 1e4, proton penalties × 0.01.
-Synthetic test (seed 1): X-ray RMSE 0.2293 dex (persistence 0.268, plain CNN 0.2356), active 0.278, protons 0.056 (persistence 0.060), TSS ≥M 0.40.
+`real_physp_1e4_0.01_s1`: residual 1D-CNN (180 min → 60 min), physics loss λ = 1e4 with proton terms × 0.01, trained on real GOES-16 NCEI L2 data.
+Real test: X-ray RMSE 0.155 dex (persistence 0.178, plain CNN 0.158); active 0.179 (persistence 0.228); protons 0.119 (persistence 0.159); TSS ≥M 0.35.
 
 ## Latest results
-Sweep 2, synthetic test split, seed 1, RMSE in dex vs noise-free truth (seed std ≈ 0.0008):
+Real GOES-16 test split (2024-07 → 2025-03, 71,876 windows), seed 1, RMSE in dex vs observations:
 
-| Variant | X-ray | Protons | Quiet roughness |
-|---|---|---|---|
-| CNN (MSE), 3 seeds | 0.2356 | 0.057 | 6.6e-4 |
-| Physics, shared λ, 3 seeds | 0.2303 | 0.060 | 1.5e-4 |
-| Physics, proton × 0.01 | 0.2293 | 0.056 | 3.4e-4 |
-| Quiet curvature only | 0.2295 | 0.060 | 2.0e-4 |
-| Cooling bound only | 0.2367 | 0.060 | 3.5e-4 |
-| Convexity only | 0.2338 | 0.056 | 1.4e-3 |
-
-Real-data loader validation: XRS-B vs SWPC median −0.001 dex; reconstructed SEP peaks vs NOAA 2024 list median ratio 1.19, scatter 0.22 dex (n = 8).
+| Model | X-ray | X-ray active | Protons | Quiet roughness | TSS ≥M | TSS S1 |
+|---|---|---|---|---|---|---|
+| Persistence | 0.178 | 0.228 | 0.159 | 0 | 0.33 | 0.88 |
+| CNN (MSE) | 0.158 | 0.183 | 0.118 | 5.6e-4 | 0.34 | 0.93 |
+| CNN + physics (per-channel) | 0.155 | 0.179 | 0.119 | 2.9e-4 | 0.35 | 0.89 |
 
 ## Running now
-Real-data training on GOES-16 (MSE, physp_1e4_0.01, physp fine-tuned from synthetic): 2 workers, started 21:04, expected ~1–2 h.
-
-## Waiting on user
 Nothing.
 
+## Waiting on user
+- OK to run the fine-tuned-from-synthetic variant and seeds 2–3 of both real models? 5 runs, 1 worker at a time (~2.5 GB RAM), ~25–40 min each.
+
 ## Next up
-Real-data training + analysis (sweeps/train_real.jl, analyze_real.jl), then report, onboarding notebook update, and CV bullets with real-data numbers.
+Error bars on the real-data result, then report + onboarding notebook + CV bullets with real-data numbers. Details: sweeps/REPORT.md.

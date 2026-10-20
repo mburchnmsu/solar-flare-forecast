@@ -5,6 +5,7 @@ const MODEL_COLORS = Dict(
     "CNN (MSE only)" => "#2a78d6",
     "CNN + naive smoothing" => "#eb6834",
     "CNN + physics loss" => "#1baf7a",
+    "Physics, per-channel λ" => "#1baf7a",                   # the physics model, per-channel weighting
 )
 const INK = "#0b0b0b"
 const INK_2 = "#52514e"
