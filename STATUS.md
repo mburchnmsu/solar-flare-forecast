@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-19 13:10, DESKTOP-BBASC81
+Updated: 2026-10-19 21:04, DESKTOP-BBASC81
 
 ## Headline
 Synthetic sweeps done: the per-channel physics loss is best on both channels (X-ray −14% vs persistence, protons now below persistence), and the ablation shows the quiet-curvature term does the work. A validated real-data set (GOES-16 NCEI, 2022–25) is ready; real-data training is waiting for memory while Zodi runs.
@@ -23,10 +23,10 @@ Sweep 2, synthetic test split, seed 1, RMSE in dex vs noise-free truth (seed std
 Real-data loader validation: XRS-B vs SWPC median −0.001 dex; reconstructed SEP peaks vs NOAA 2024 list median ratio 1.19, scatter 0.22 dex (n = 8).
 
 ## Running now
-Nothing. Per the user (via Project Hub): no heavy runs 15:30–17:20 on 2026-10-19 (meeting). Real-data training starts after 17:20, once free RAM allows.
+Real-data training on GOES-16 (MSE, physp_1e4_0.01, physp fine-tuned from synthetic): 2 workers, started 21:04, expected ~1–2 h.
 
 ## Waiting on user
-- When to start real-data training: 3 runs (MSE, physp_1e4_0.01, physp fine-tuned from synthetic), 2 workers, ~1.5–2.5 GB each, ~1–2 h.
+Nothing.
 
 ## Next up
 Real-data training + analysis (sweeps/train_real.jl, analyze_real.jl), then report, onboarding notebook update, and CV bullets with real-data numbers.
