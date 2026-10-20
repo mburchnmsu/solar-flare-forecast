@@ -1,0 +1,4 @@
+mse 2 -
+physp_1e4_0.01 2 -
+mse 3 -
+physp_1e4_0.01 3 -

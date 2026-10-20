@@ -1,0 +1,5 @@
+"model","config","n_seeds","rmse_x","rmse_x_quiet","rmse_x_active","rmse_p","rough_quiet","decay_violation_frac","tss_m","tss_m_new","tss_s1","rmse_x_sd","rmse_x_quiet_sd","rmse_x_active_sd","rmse_p_sd","rough_quiet_sd","decay_violation_frac_sd","tss_m_sd","tss_m_new_sd","tss_s1_sd"
+"Persistence","persistence",1,0.177568,0.14711137,0.22813554,0.15942651,0.0,0.0,0.32890401424751964,0.0,0.8820622498064011,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+"CNN (MSE only)","real_mse",1,0.15754181,0.14395927,0.18252513,0.11845608,0.0005648016,1.1594041590145993e-6,0.3366683781204303,0.018391618731963637,0.9277212310707456,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+"Physics, per-channel λ (fine-tuned)","real_physp_1e4_0.01_ft-physp_1e4_0.01_s1",1,0.15367669,0.14087941,0.17730466,0.12157643,0.00019283783,4.637616636058397e-7,0.3504638970382085,0.03487267911821867,0.9025377084042556,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+"Physics, per-channel λ","real_physp_1e4_0.01",1,0.15450042,0.14110456,0.17912492,0.11936975,0.00028993105,1.8550466544233588e-6,0.35200693218240253,0.03591783782727802,0.8896891198562691,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN

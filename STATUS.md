@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-19 21:48, DESKTOP-BBASC81
+Updated: 2026-10-20 16:53, DESKTOP-BBASC81
 
 ## Headline
 First real-data result: trained on GOES-16 (2022–23) and tested on Jul 2024 – Mar 2025, the physics-loss CNN beats persistence by 13% on X-ray flux (21% during flares) and the plain CNN by 2%, and halves quiet-time roughness. Single seed so far.
@@ -18,10 +18,10 @@ Real GOES-16 test split (2024-07 → 2025-03, 71,876 windows), seed 1, RMSE in d
 | CNN + physics (per-channel) | 0.155 | 0.179 | 0.119 | 2.9e-4 | 0.35 | 0.89 |
 
 ## Running now
-Nothing, and nothing will start tonight (user: Zodi only tonight). All three real-data runs finished cleanly; none was interrupted by the PC sleeping: real_mse_s1, real_physp_1e4_0.01_s1, and the fine-tuned-from-synthetic run (finished 21:43, not yet analysed).
+Seeds 2–3 of the two real-data models (4 runs, 1 worker, ~2.5 GB RAM), started 16:57, expected ~19:00; then analysis. Fine-tuned-from-synthetic run analysed: X-ray 0.1537 dex (vs 0.1545 without pre-training), lowest quiet roughness (1.9e-4).
 
 ## Waiting on user
-- OK (after tonight) to analyse the fine-tuned run (a few minutes, 1 process) and run seeds 2–3 of the real models for error bars (4 runs, 1 worker at a time, ~2.5 GB RAM, ~25–40 min each).
+Nothing.
 
 ## Next up
 Error bars on the real-data result, then report + onboarding notebook + CV bullets with real-data numbers. Details: sweeps/REPORT.md.

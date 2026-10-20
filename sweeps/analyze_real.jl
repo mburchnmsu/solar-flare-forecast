@@ -37,6 +37,17 @@ end
 t = DataFrame(rows)
 open(io -> show(io, MIME("text/csv"), t), joinpath(RESULTS_DIR, "real_metrics.csv"), "w")
 show(stdout, t; allrows = true, allcols = true, eltypes = false); println()
+
+# seed-aggregated: strip the trailing _s<seed> from run names
+t.config = replace.(t.run, r"_s\d+$" => "")
+summary = combine(groupby(t, [:model, :config]), nrow => :n_seeds,
+                  [k => mean => k for k in KEYS]..., [k => (v -> length(v) > 1 ? std(v) : NaN) => Symbol(k, :_sd) for k in KEYS]...)
+open(io -> show(io, MIME("text/csv"), summary), joinpath(RESULTS_DIR, "real_summary.csv"), "w")
+for r in eachrow(summary)
+    @printf("%-36s n=%d  X-ray %.4f ± %.4f  active %.4f ± %.4f  protons %.4f ± %.4f  rough %.1e  TSS≥M %.3f ± %.3f  TSS S1 %.3f\n",
+            r.config, r.n_seeds, r.rmse_x, r.rmse_x_sd, r.rmse_x_active, r.rmse_x_active_sd, r.rmse_p, r.rmse_p_sd,
+            r.rough_quiet, r.tss_m, r.tss_m_sd, r.tss_s1)
+end
 println("Test windows: ", length(data.test), " (stride 5 min)")
 
 # forecast examples on the real test split: largest flare decay, fastest rise, quiet, SEP rise
