@@ -10,24 +10,38 @@ flare thermodynamics:
   background without damping real flares.
 * **Gradual-phase convexity:** exponential cooling on top of a background is convex in log space.
 
-Built with Julia 1.10+ / Flux.jl / DataFrames.jl / CairoMakie.jl. Fully reproducible from `Project.toml` + `Manifest.toml`.
+Built with Julia 1.10+ / Flux.jl / DataFrames.jl / CairoMakie.jl / NCDatasets.jl. Fully reproducible from `Project.toml` + `Manifest.toml`.
 
-## Results (synthetic GOES-like telemetry, sealed test split, mean ± std over 3 seeds)
+## Results on real GOES-16 data (NCEI L2; train 2022-04 → 2023-12, test 2024-07 → 2025-03; 3 seeds)
 
-| Model | X-ray RMSE (dex) | X-ray, active periods | Quiet-time roughness (dex/min²) | TSS, ≥M within 60 min |
+| Model | X-ray RMSE (dex) | X-ray, active periods | ≥10 MeV protons | Quiet-time roughness (dex/min²) |
 |---|---|---|---|---|
-| Persistence (operational baseline) | 0.268 | 0.377 | 0 | 0.391 |
+| Persistence (operational baseline) | 0.178 | 0.228 | 0.159 | 0 |
+| CNN, MSE only | 0.1569 ± 0.0006 | 0.181 ± 0.001 | 0.118 | 6.0e-4 |
+| **CNN + physics loss** | **0.1552 ± 0.0006** | **0.179 ± 0.000** | 0.119 | **3.0e-4** |
+
+On real data the physics loss cuts X-ray error by 12.6% vs persistence (21% during flares) and by 1.1% vs the same
+network without it (≈3× the seed spread), and halves quiet-time roughness. Both CNNs beat persistence on protons by
+~26%. The test period includes the Oct 2024 X9.0 flare and the 1810 pfu SEP event. The real-data loader is validated
+against NOAA: XRS-B matches SWPC real-time to 0.001 dex (median), and the ≥10 MeV integral reconstructed from the SGPS
+differential channels matches the peaks in NOAA's 2024 SEP list with a median ratio of 1.19 (n = 8).
+
+### Synthetic development data (noise-free truth available; 3 seeds)
+
+| Model | X-ray RMSE (dex) | X-ray, active periods | Quiet-time roughness | TSS, ≥M within 60 min |
+|---|---|---|---|---|
+| Persistence | 0.268 | 0.377 | 0 | 0.391 |
 | CNN, MSE only | 0.2356 ± 0.0002 | 0.294 ± 0.002 | 6.6e-4 | 0.384 ± 0.010 |
 | CNN + uniform smoothing | 0.2354 ± 0.0003 | 0.294 ± 0.003 | 4.4e-4 | 0.308 ± 0.011 |
 | **CNN + physics loss** | **0.2303 ± 0.0008** | **0.282 ± 0.003** | **1.5e-4** | **0.399 ± 0.006** |
 
-The physics loss cuts X-ray error by 14% vs persistence (25% in active periods) and by 2% vs the same CNN without it,
-and removes 77% of quiet-time roughness. Uniform smoothing, by contrast, loses 20% of M-class skill. Known
-limitations, stated plainly: a shared λ collapses the proton forecast to persistence, nothing forecasts brand-new
-flare onsets, and zero-shot on real SWPC data the physics model is 5% *worse* than persistence (its priors are tuned to
-the synthetic flare shapes). Full analysis: [`sweeps/REPORT.md`](sweeps/REPORT.md).
+Uniform smoothing loses 20% of M-class skill because it can't tell a flare rise from noise. An ablation shows the
+regime-gated quiet-curvature term carries the gain, while the cooling bound never binds. Synthetic-trained models
+applied zero-shot to real data did *worse* than persistence; training on real data fixed that. Known limits: no model
+forecasts brand-new flare onsets, and the largest flares (X9) are decayed too slowly. Full analysis:
+[`sweeps/REPORT.md`](sweeps/REPORT.md).
 
-![forecast examples](figures/forecast_examples.png)
+![real-data forecast examples](figures/real_forecast_examples.png)
 
 ## Quick start
 
