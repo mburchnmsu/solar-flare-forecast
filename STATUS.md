@@ -1,27 +1,29 @@
 # SolarFlareForcast status
-Updated: 2026-10-20 16:53, DESKTOP-BBASC81
+Updated: 2026-10-20 17:45, DESKTOP-BBASC81
 
 ## Headline
-First real-data result: trained on GOES-16 (2022–23) and tested on Jul 2024 – Mar 2025, the physics-loss CNN beats persistence by 13% on X-ray flux (21% during flares) and the plain CNN by 2%, and halves quiet-time roughness. Single seed so far.
+Real-data result confirmed over 3 seeds: on GOES-16 (test Jul 2024 – Mar 2025) the physics-loss CNN beats persistence by 12.6% on X-ray flux (21% during flares) and the plain CNN by 1.1% (≈3σ), and halves quiet-time roughness.
 
 ## Best model
-`real_physp_1e4_0.01_s1`: residual 1D-CNN (180 min → 60 min), physics loss λ = 1e4 with proton terms × 0.01, trained on real GOES-16 NCEI L2 data.
-Real test: X-ray RMSE 0.155 dex (persistence 0.178, plain CNN 0.158); active 0.179 (persistence 0.228); protons 0.119 (persistence 0.159); TSS ≥M 0.35.
+`real_physp_1e4_0.01` (3 seeds): residual 1D-CNN (180 min → 60 min), physics loss λ = 1e4 with proton terms × 0.01, trained on real GOES-16 NCEI L2 data 2022-04 → 2023-12.
+Real test: X-ray RMSE 0.1552 ± 0.0006 dex (persistence 0.1776, plain CNN 0.1569 ± 0.0006); active 0.179; protons 0.119 (persistence 0.159).
+(A single fine-tuned-from-synthetic run reaches 0.1537; unconfirmed.)
 
 ## Latest results
-Real GOES-16 test split (2024-07 → 2025-03, 71,876 windows), seed 1, RMSE in dex vs observations:
+Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in dex vs observations:
 
-| Model | X-ray | X-ray active | Protons | Quiet roughness | TSS ≥M | TSS S1 |
-|---|---|---|---|---|---|---|
-| Persistence | 0.178 | 0.228 | 0.159 | 0 | 0.33 | 0.88 |
-| CNN (MSE) | 0.158 | 0.183 | 0.118 | 5.6e-4 | 0.34 | 0.93 |
-| CNN + physics (per-channel) | 0.155 | 0.179 | 0.119 | 2.9e-4 | 0.35 | 0.89 |
+| Model | X-ray | X-ray active | Protons | Quiet roughness | TSS ≥M |
+|---|---|---|---|---|---|
+| Persistence | 0.1776 | 0.228 | 0.159 | 0 | 0.33 |
+| CNN (MSE) | 0.1569 ± 0.0006 | 0.181 | 0.118 | 6.0e-4 | 0.336 ± 0.002 |
+| CNN + physics | 0.1552 ± 0.0006 | 0.179 | 0.119 | 3.0e-4 | 0.341 ± 0.010 |
+| Fine-tuned from synthetic (n=1) | 0.1537 | 0.177 | 0.122 | 1.9e-4 | 0.350 |
 
 ## Running now
-Seeds 2–3 of the two real-data models (4 runs, 1 worker, ~2.5 GB RAM), started 16:57, expected ~19:00; then analysis. Fine-tuned-from-synthetic run analysed: X-ray 0.1537 dex (vs 0.1545 without pre-training), lowest quiet roughness (1.9e-4).
+Nothing. All runs finished 17:44; the PC is free for Zodi.
 
 ## Waiting on user
-Nothing.
+- Optional: seeds 2–3 of the fine-tuned model to confirm the pre-training gain (2 runs, 1 worker, ~25 min each).
 
 ## Next up
-Error bars on the real-data result, then report + onboarding notebook + CV bullets with real-data numbers. Details: sweeps/REPORT.md.
+Update README, onboarding notebook and CV bullets with the real-data numbers; then probabilistic forecasts or GOES-18 data (see SolOnboarding.ipynb §7).

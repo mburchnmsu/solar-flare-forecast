@@ -170,3 +170,24 @@ single-run numbers.
 **Not yet run (needs the user's OK):** the fine-tuned-from-synthetic variant (`physp_1e4_0.01` initialised from
 `physp_1e4_0.01_s1`), and seeds 2–3 of both models for error bars. Run these one worker at a time: two workers loading the
 1.5 M-minute dataset at once pushed the PC low on RAM.
+
+## Real-data sweep R2: 3 seeds (2026-10-20)
+
+Same protocol as R1; seeds 1–3 of both real-data models, plus the fine-tuned run (seed 1). Test 2024-07 → 2025-03, dex.
+
+| Model | n | X-ray RMSE | X-ray active | Protons | Quiet roughness | TSS ≥M | TSS S1 |
+|---|---|---|---|---|---|---|---|
+| Persistence | – | 0.1776 | 0.228 | 0.159 | 0 | 0.329 | 0.882 |
+| CNN, MSE only | 3 | 0.1569 ± 0.0006 | 0.1813 ± 0.0011 | 0.1184 ± 0.0005 | 6.0e-4 | 0.336 ± 0.002 | 0.914 |
+| **CNN + physics (λ=1e4, proton × 0.01)** | 3 | **0.1552 ± 0.0006** | **0.1794 ± 0.0003** | 0.1190 ± 0.0004 | **3.0e-4** | 0.341 ± 0.010 | 0.898 |
+| Physics, fine-tuned from synthetic | 1 | 0.1537 | 0.1773 | 0.1216 | 1.9e-4 | 0.350 | 0.903 |
+
+**Conclusions (real GOES-16 data)**
+1. **The physics loss gives a small, reproducible X-ray gain:** −1.1% RMSE vs the same CNN (gap 0.0017 dex, ≈ 3× the
+   seed std), and −12.6% vs persistence (−21% in active periods). It is consistent with the synthetic result
+   (−2.2%).
+2. **Quiet-time roughness is halved,** the effect the curvature prior was designed for.
+3. **Protons and onset skill: no difference.** Both CNNs beat persistence by ~26% on protons; M-class TSS differences
+   are within seed noise.
+4. **Synthetic pre-training looks promising but is unconfirmed:** the single fine-tuned run is another −1% on X-rays,
+   with the smoothest forecasts. Seeds 2–3 would settle it.
