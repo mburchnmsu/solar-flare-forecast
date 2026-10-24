@@ -191,3 +191,26 @@ Same protocol as R1; seeds 1–3 of both real-data models, plus the fine-tuned r
    are within seed noise.
 4. **Synthetic pre-training looks promising but is unconfirmed:** the single fine-tuned run is another −1% on X-rays,
    with the smoothest forecasts. Seeds 2–3 would settle it.
+
+## Real-data sweep R3: fine-tuned seeds 2–3 (2026-10-24)
+
+Seeds 2–3 of the synthetic → real fine-tuned model (init `physp_1e4_0.01_s1`, then trained on real GOES-16 data with the
+same loss), 1 worker at below-normal priority. Same protocol and test split as R2, dex.
+
+| Model | n | X-ray RMSE | X-ray active | Protons | Quiet roughness | TSS ≥M | TSS S1 |
+|---|---|---|---|---|---|---|---|
+| Persistence | – | 0.1776 | 0.228 | 0.159 | 0 | 0.329 | 0.882 |
+| CNN, MSE only | 3 | 0.1569 ± 0.0006 | 0.1813 ± 0.0011 | 0.1184 ± 0.0005 | 6.0e-4 | 0.336 ± 0.002 | 0.914 |
+| CNN + physics | 3 | 0.1552 ± 0.0006 | 0.1794 ± 0.0003 | 0.1190 ± 0.0004 | 3.0e-4 | 0.341 ± 0.010 | 0.898 |
+| **Physics, fine-tuned from synthetic** | 3 | **0.1533 ± 0.0005** | **0.1767 ± 0.0011** | 0.1216 ± 0.0010 | **2.3e-4** | 0.345 ± 0.006 | 0.910 |
+
+**Conclusions**
+1. **Synthetic pre-training helps, confirmed:** −1.2% X-ray RMSE vs the physics CNN trained on real data only (gap
+   0.0019 dex, ≈ 3× the seed std), −2.3% vs the plain CNN, −13.7% vs persistence (−22.5% in active periods).
+   Forecasts are also the smoothest (quiet roughness 2.3e-4, 62% below the plain CNN).
+2. **Protons are slightly worse** (0.1216 vs 0.1190, ≈ 2–3σ). The generator's SEP model (onset delay, ppk ∝ F^1.3)
+   probably biases the proton head. Still 24% better than persistence. A channel-specific fine-tune (unfreeze the
+   proton output only, or drop the proton targets in pre-training) could keep the X-ray gain without that cost.
+3. **Onset skill is unchanged:** TSS differences are within seed noise for all CNNs, so the X-ray gain is in flare
+   evolution and decay, not in predicting new flares.
+4. New best model: `real_physp_1e4_0.01_ft-physp_1e4_0.01_s1` (3 seeds).
