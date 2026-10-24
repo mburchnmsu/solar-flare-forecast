@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-20 17:45, DESKTOP-BBASC81
+Updated: 2026-10-24 00:33, DESKTOP-BBASC81
 
 ## Headline
 Real-data result confirmed over 3 seeds: on GOES-16 (test Jul 2024 – Mar 2025) the physics-loss CNN beats persistence by 12.6% on X-ray flux (21% during flares) and the plain CNN by 1.1% (≈3σ), and halves quiet-time roughness.
@@ -20,10 +20,10 @@ Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in
 | Fine-tuned from synthetic (n=1) | 0.1537 | 0.177 | 0.122 | 1.9e-4 | 0.350 |
 
 ## Running now
-Nothing. All runs finished 17:44; the PC is free for Zodi.
+Seeds 2–3 of the fine-tuned-from-synthetic real-data model (2 runs, 1 worker, BelowNormal priority so Zodi is not slowed), started 00:33, expected ~01:45 including analysis.
 
 ## Waiting on user
-- Optional: seeds 2–3 of the fine-tuned model to confirm the pre-training gain (2 runs, 1 worker, ~25 min each).
+Nothing.
 
 ## Next up
 Update README, onboarding notebook and CV bullets with the real-data numbers; then probabilistic forecasts or GOES-18 data (see SolOnboarding.ipynb §7).
