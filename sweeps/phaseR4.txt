@@ -1,0 +1,3 @@
+physp_1e4_0.01 1 physp_1e4_0.01_s1-pr
+physp_1e4_0.01 2 physp_1e4_0.01_s1-pr
+physp_1e4_0.01 3 physp_1e4_0.01_s1-pr

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Run each line of stdin as a train_real.jl job, one at a time, at BelowNormal Windows priority, then analyze_real.
-# A watcher lowers the priority of every julia.exe started after this script began (other projects' are older).
+# A watcher lowers the priority of this project's julia jobs only (matched on the script in their command line),
+# so other projects' Julia processes are never touched.
 cd "$(dirname "$0")/.."
-T0=$(powershell -NoProfile -Command "(Get-Date).ToString('o')")
 ( while [ ! -f sweeps/results/.lowprio_done ]; do
-    powershell -NoProfile -Command "Get-Process julia -ErrorAction SilentlyContinue | Where-Object { \$_.StartTime -ge [datetime]'$T0' -and \$_.PriorityClass -ne 'BelowNormal' } | ForEach-Object { \$_.PriorityClass = 'BelowNormal' }" 2>/dev/null
+    powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='julia.exe'\" | Where-Object { \$_.CommandLine -match 'sweeps/(train|analyze)_real\.jl' } | ForEach-Object { \$p = Get-Process -Id \$_.ProcessId -ErrorAction SilentlyContinue; if (\$p -and \$p.PriorityClass -ne 'BelowNormal') { \$p.PriorityClass = 'BelowNormal' } }" 2>/dev/null
     sleep 10; done ) &
 rm -f sweeps/results/.lowprio_done
 while read -r a b c; do

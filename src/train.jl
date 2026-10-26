@@ -14,15 +14,23 @@ end
 """
     train_model(data, loss; epochs, batchsize, lr, seed, patience) -> (model, history)
 
+Fine-tuning: `init_state` loads a saved model first; `reset_proton_head = true` then zeroes the proton half of the
+output layer, so the proton forecast restarts from persistence while the shared trunk keeps what it learned.
+
 Same seed ⇒ same initial weights and batch order for every loss variant, so ablations differ only in the loss.
 The checkpoint with the lowest validation MSE (data fit only, identical for all variants) is restored at the end.
 """
 function train_model(data, loss::PhysicsLoss; epochs::Int = 30, batchsize::Int = 256, lr = 1f-3,
                      seed::Int = 1, patience::Int = 6, verbose::Bool = true, label = "model",
-                     init_state = nothing)
+                     init_state = nothing, reset_proton_head::Bool = false)
     rng = Xoshiro(seed)
     model = build_model(data.W, data.H; rng)
     init_state === nothing || Flux.loadmodel!(model, init_state)       # fine-tune from a saved model
+    if reset_proton_head                       # proton outputs restart at persistence; trunk + X-ray head keep the prior
+        head = model.net[end]
+        head.weight[data.H+1:end, :] .= 0f0
+        head.bias[data.H+1:end] .= 0f0
+    end
     opt = Flux.setup(OptimiserChain(ClipNorm(1f0), Adam(Float32(lr))), model)
     loader = Flux.DataLoader((data.train.X, data.train.Y); batchsize, shuffle = true, rng)
     σ = data.scaler.σ

@@ -22,4 +22,11 @@ using Test, SolarFlareForecast, Flux, Statistics, DataFrames
 
     g = Flux.gradient(mm -> total_loss(L, mm(x), data.test.Y[:, :, 1:8], x, data.scaler.σ), m)[1]
     @test g.net.layers[end].weight !== nothing                             # gradients reach the network
+
+    trained, _ = train_model(data, PhysicsLoss(); epochs = 1, verbose = false)
+    ft, _ = train_model(data, PhysicsLoss(); epochs = 0, verbose = false, init_state = Flux.state(trained),
+                        reset_proton_head = true)
+    pers = persistence(data.test)
+    @test predict(ft, data.test.X)[:, 2, :] == pers[:, 2, :]                 # proton head back at persistence
+    @test predict(ft, data.test.X)[:, 1, :] == predict(trained, data.test.X)[:, 1, :]  # X-ray head kept
 end

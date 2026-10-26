@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-24 01:45, DESKTOP-BBASC81
+Updated: 2026-10-26 11:15, DESKTOP-BBASC81
 
 ## Headline
 Synthetic pre-training confirmed over 3 seeds: the physics CNN pre-trained on synthetic telemetry and fine-tuned on real GOES-16 data is the new best model, beating persistence by 13.7% on X-ray flux (22.5% during flares) and the real-only physics CNN by 1.2% (≈3σ).
@@ -19,10 +19,11 @@ Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in
 | CNN + physics, fine-tuned from synthetic | 0.1533 ± 0.0005 | 0.177 | 0.122 ± 0.001 | 2.3e-4 | 0.345 ± 0.006 |
 
 ## Running now
-Nothing (R3 fine-tune seeds 2–3 finished 01:37).
+Nothing. The proton-head-reset fine-tune (R4, 3 seeds × ~35 min, 1 worker, BelowNormal) is coded, tested and ready, but its launch was blocked: the go-ahead came relayed via another session, so it needs the user to approve it in this session.
 
 ## Waiting on user
-Nothing.
+1. Approve launching R4 in the solar session (about 1 h 45 min, ~1.8 GB RAM).
+2. After R4: probabilistic forecasts or GOES-18 data first?
 
 ## Next up
-Update the onboarding notebook and CV bullets with the fine-tuned numbers. Possible follow-up: keep the X-ray gain without the small proton cost (proton-specific fine-tune); then probabilistic forecasts or GOES-18 data (see SolOnboarding.ipynb §7).
+R4: fine-tune from synthetic with the proton output head reset to persistence, to keep the X-ray gain without the proton cost (selection on validation, test scored once). Onboarding notebook (§5 real-data results) and CV_BULLETS.md are updated.

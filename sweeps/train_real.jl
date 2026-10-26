@@ -1,6 +1,7 @@
 # Train one loss variant on REAL GOES-16 data (NCEI L2, 2022-01 → 2025-03), optionally fine-tuning a synthetic model.
 #     julia -t 1 --project=. sweeps/train_real.jl <tag> [seed] [init_run] [epochs]
 #   init_run: a synthetic run directory name in sweeps/results (e.g. phys_1e4_s1) to fine-tune from; "-" for none.
+#             Append "-pr" (e.g. physp_1e4_0.01_s1-pr) to reset the proton output head to persistence first.
 # Split by date: train 2022–2023, validate 2024-01 → 2024-06, test 2024-07 → 2025-03 (guard gaps of W+H minutes).
 # Output: sweeps/results/real_<tag>[_ft-<init_run>]_s<seed>/run.jls
 include(joinpath(@__DIR__, "..", "sol_setup.jl"))
@@ -26,8 +27,10 @@ if abspath(PROGRAM_FILE) == @__FILE__
     tag = ARGS[1]
     seed = length(ARGS) > 1 ? parse(Int, ARGS[2]) : 1
     init_run = length(ARGS) > 2 ? ARGS[3] : "-"
+    reset_proton_head = endswith(init_run, "-pr")
     epochs = length(ARGS) > 3 ? parse(Int, ARGS[4]) : 20
     name = "real_$(tag)" * (init_run == "-" ? "" : "_ft-$(init_run)") * "_s$(seed)"
+    init_run = chopsuffix(init_run, "-pr")                    # the synthetic run directory
     out = joinpath(@__DIR__, "results", name)
     isfile(joinpath(out, "run.jls")) && (println("SKIP ", name); exit())
 
@@ -40,11 +43,11 @@ if abspath(PROGRAM_FILE) == @__FILE__
     end
     df, data = real_data(; scaler)
     println(name, ": train ", length(data.train), ", val ", length(data.val), ", test ", length(data.test), " windows")
-    model, hist = train_model(data, loss; epochs, seed, patience = 5, label = name, init_state)
+    model, hist = train_model(data, loss; epochs, seed, patience = 5, label = name, init_state, reset_proton_head)
     mkpath(out)
     lossnt = NamedTuple{fieldnames(PhysicsLoss)}(Tuple(getfield(loss, f) for f in fieldnames(PhysicsLoss)))
     serialize(joinpath(out, "run.jls"), (; tag = name, seed, group, loss = lossnt, history = hist,
-                                          state = Flux.state(model), scaler = data.scaler, init_run,
+                                          state = Flux.state(model), scaler = data.scaler, init_run, reset_proton_head,
                                           pred_val = predict(model, data.val.X), pred_test = predict(model, data.test.X)))
     println("DONE ", name)
 end

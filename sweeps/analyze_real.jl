@@ -30,7 +30,7 @@ for (name, r) in sort(collect(runs); by = first)
     er = ev(r.pred_test, d, :test)
     # validation MSE in physical units (dex²) so runs with different scalers compare fairly
     vm = mean(abs2, (r.pred_val .- d.val.Y) .* reshape(d.scaler.σ, 1, 2, 1))
-    push!(rows, (; model = r.group * (r.init_run == "-" ? "" : " (fine-tuned)"), run = name, val_mse = vm,
+    push!(rows, (; model = r.group * (r.init_run == "-" ? "" : haskey(r, :reset_proton_head) && r.reset_proton_head ? " (fine-tuned, proton head reset)" : " (fine-tuned)"), run = name, val_mse = vm,
                  epochs = nrow(r.history), (k => getfield(er, k) for k in KEYS)...))
     preds[name] = (r, d)
 end
