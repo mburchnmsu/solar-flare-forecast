@@ -19,7 +19,7 @@ Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in
 | CNN + physics, fine-tuned from synthetic | 0.1533 ± 0.0005 | 0.177 | 0.122 ± 0.001 | 2.3e-4 | 0.345 ± 0.006 |
 
 ## Running now
-Nothing. R4 (proton-head-reset fine-tune, 3 seeds, ~1 h 45 min, 1 worker, BelowNormal) is ready; the user wants it run, and the timing is being agreed with Project Hub.
+Nothing. R4 (proton-head-reset fine-tune, 3 seeds, ~1 h 45 min, 1 worker, BelowNormal) is ready; the user wants it run, and planned for ~22:00 tonight, after Zodi's 1000-epoch test, on the hub's go (RAM is tight now).
 
 ## Waiting on user
 1. After R4: probabilistic forecasts or GOES-18 data first?
