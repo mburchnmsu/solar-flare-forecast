@@ -70,7 +70,8 @@ julia -t 2 --project=. sweeps/zero_shot_swpc.jl                         # apply 
 channels on one 1-minute grid (short gaps interpolated in log space, long gaps dropped), and returns the same schema as
 the synthetic generator: `time, minute, xray [W m⁻²], proton [pfu]`. Every download is cached in `data/raw/`, and
 `load_swpc_cache()` merges all cached files, so running `load_swpc()` weekly builds a continuous history. Windowing
-never crosses a data gap. For multi-year training sets, export NCEI GOES-R XRS / SGPS netCDF to the same three
+never crosses a data gap. `data/raw/` keeps one SWPC snapshot (2026-10-12 → 10-19; NOAA data, public domain) so
+the zero-shot result reproduces offline. For multi-year training sets, export NCEI GOES-R XRS / SGPS netCDF to the same three
 columns and use `read_telemetry_csv`.
 
 ## Layout
