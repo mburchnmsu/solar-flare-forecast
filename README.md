@@ -71,14 +71,19 @@ channels on one 1-minute grid (short gaps interpolated in log space, long gaps d
 the synthetic generator: `time, minute, xray [W m⁻²], proton [pfu]`. Every download is cached in `data/raw/`, and
 `load_swpc_cache()` merges all cached files, so running `load_swpc()` weekly builds a continuous history. Windowing
 never crosses a data gap. `data/raw/` keeps one SWPC snapshot (2026-10-12 → 10-19; NOAA data, public domain) so
-the zero-shot result reproduces offline. For multi-year training sets, export NCEI GOES-R XRS / SGPS netCDF to the same three
-columns and use `read_telemetry_csv`.
+the zero-shot result reproduces offline.
+
+For multi-year training sets, `load_ncei(16, Date(2022,4,25), Date(2025,3,31))` downloads NOAA's science-quality
+NCEI GOES-R L2 archive (XRS netCDF with quality flags; SGPS differential channels summed to a ≥10 MeV integral)
+into the same schema, cached in `data/ncei/` (not committed). `read_telemetry_csv` loads any other source with
+the same columns.
 
 ## Layout
 
 ```
 src/synthetic.jl   GOES-like generator: Hawkes-clustered power-law flares, SEPs with transport delay, noise + clean truth
 src/ingest.jl      SWPC JSON download/cache/merge, 1-min regridding, CSV loader
+src/ncei.jl        NCEI GOES-R L2 XRS + SGPS netCDF download, quality flags, ≥10 MeV reconstruction
 src/windows.jl     log transform, train-only standardisation, contiguous windows, chronological split with guard gaps
 src/model.jl       ResidualForecaster (CNN + persistence skip) and PhysicsLoss
 src/train.jl       Adam + clip-norm, early stopping on validation MSE, seeded RNG everywhere
