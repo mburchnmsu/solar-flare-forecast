@@ -19,12 +19,15 @@ Built with Julia 1.10+ / Flux.jl / DataFrames.jl / CairoMakie.jl / NCDatasets.jl
 | Persistence (operational baseline) | 0.178 | 0.228 | 0.159 | 0 |
 | CNN, MSE only | 0.1569 ± 0.0006 | 0.181 ± 0.001 | 0.118 | 6.0e-4 |
 | CNN + physics loss | 0.1552 ± 0.0006 | 0.179 ± 0.000 | 0.119 | 3.0e-4 |
-| **CNN + physics loss, pre-trained on synthetic** | **0.1533 ± 0.0005** | **0.177 ± 0.001** | 0.122 | **2.3e-4** |
+| CNN + physics loss, pre-trained on synthetic | 0.1533 ± 0.0005 | 0.177 ± 0.001 | 0.122 | **2.3e-4** |
+| **…, proton output head reset before fine-tuning** | **0.1530 ± 0.0006** | **0.176 ± 0.001** | 0.121 | 2.8e-4 |
 
 On real data the physics loss cuts X-ray error by 12.6% vs persistence (21% during flares) and by 1.1% vs the same
 network without it (≈3× the seed spread), and halves quiet-time roughness. Pre-training on the synthetic generator
 and then fine-tuning on real data gains another 1.2% (−13.7% vs persistence, −22.5% during flares) and gives the
-smoothest forecasts, at a small cost on protons. All CNNs beat persistence on protons by 24–26%. The test period includes the Oct 2024 X9.0 flare and the 1810 pfu SEP event. The real-data loader is validated
+smoothest forecasts, at a small cost on protons. Resetting the proton output head before fine-tuning keeps the X-ray
+gain (−13.8% vs persistence, −22.8% during flares) and recovers ~40% of that proton cost; it is the best model on
+validation. All CNNs beat persistence on protons by 24–26%. The test period includes the Oct 2024 X9.0 flare and the 1810 pfu SEP event. The real-data loader is validated
 against NOAA: XRS-B matches SWPC real-time to 0.001 dex (median), and the ≥10 MeV integral reconstructed from the SGPS
 differential channels matches the peaks in NOAA's 2024 SEP list with a median ratio of 1.19 (n = 8).
 

@@ -214,3 +214,32 @@ same loss), 1 worker at below-normal priority. Same protocol and test split as R
 3. **Onset skill is unchanged:** TSS differences are within seed noise for all CNNs, so the X-ray gain is in flare
    evolution and decay, not in predicting new flares.
 4. New best model: `real_physp_1e4_0.01_ft-physp_1e4_0.01_s1` (3 seeds).
+
+## Real-data sweep R4: proton-head reset (2026-10-29)
+
+R3's fine-tuned model gained on X-rays but lost a little on protons. R4 repeats the fine-tune, but first zeroes the
+proton half of the output layer (`train_real.jl ... physp_1e4_0.01_s1-pr`). The proton forecast restarts from
+persistence, while the shared trunk and the X-ray head keep the synthetic prior. 3 seeds, 1 worker, BelowNormal.
+
+**Selection (validation MSE, physical dex², mean of 3 seeds):** proton-head reset 0.02032 < real-only physics
+0.02045 < R3 fine-tune 0.02047 < plain CNN 0.02074. The reset variant is chosen on validation; test below.
+
+| Model (test, 2024-07 → 2025-03) | n | X-ray RMSE | X-ray active | Protons | Quiet roughness | TSS ≥M | TSS S1 |
+|---|---|---|---|---|---|---|---|
+| Persistence | – | 0.1776 | 0.228 | 0.159 | 0 | 0.329 | 0.882 |
+| CNN, MSE only | 3 | 0.1569 ± 0.0006 | 0.1813 ± 0.0011 | 0.1184 ± 0.0005 | 6.0e-4 | 0.336 ± 0.002 | 0.914 |
+| CNN + physics, real only | 3 | 0.1552 ± 0.0006 | 0.1794 ± 0.0003 | 0.1190 ± 0.0004 | 3.0e-4 | 0.341 ± 0.010 | 0.898 |
+| Fine-tuned from synthetic (R3) | 3 | 0.1533 ± 0.0005 | 0.1767 ± 0.0011 | 0.1216 ± 0.0010 | 2.3e-4 | 0.345 ± 0.006 | 0.910 |
+| **Fine-tuned, proton head reset (R4)** | 3 | **0.1530 ± 0.0006** | **0.1760 ± 0.0009** | 0.1206 ± 0.0003 | 2.8e-4 | **0.349 ± 0.002** | 0.904 |
+
+**Conclusions**
+1. **The X-ray gain is kept** (0.1530 vs 0.1533, within seed noise): −13.8% vs persistence, −22.8% during flares,
+   −1.4% vs the real-only physics CNN, −2.5% vs the plain CNN.
+2. **The proton cost is partly recovered:** 0.1206 vs 0.1216, closing ~40% of the gap to real-only training
+   (0.1190), with 3× less seed scatter. The rest probably comes from the shared trunk, whose features were learned
+   on synthetic SEPs.
+3. **Roughness and onset skill:** quiet roughness sits between R3 and real-only (2.8e-4). M-class TSS is the highest
+   so far (0.349 ± 0.002), but it is within about 1σ of R3.
+4. **New best model (chosen on validation):** `real_physp_1e4_0.01_ft-physp_1e4_0.01_s1-pr`. The remaining proton
+   gap could be closed by a per-channel model (separate proton trunk) or by pre-training on a generator with more
+   realistic SEPs. Neither is worth it for 0.0016 dex.
