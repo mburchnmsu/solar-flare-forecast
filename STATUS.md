@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-29, DESKTOP-BBASC81
+Updated: 2026-10-29 22:58, DESKTOP-BBASC81
 
 ## Headline
 Synthetic pre-training confirmed over 3 seeds: the physics CNN pre-trained on synthetic telemetry and fine-tuned on real GOES-16 data is the new best model, beating persistence by 13.7% on X-ray flux (22.5% during flares) and the real-only physics CNN by 1.2% (≈3σ).
@@ -19,7 +19,7 @@ Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in
 | CNN + physics, fine-tuned from synthetic | 0.1533 ± 0.0005 | 0.177 | 0.122 ± 0.001 | 2.3e-4 | 0.345 ± 0.006 |
 
 ## Running now
-Nothing. R4 (proton-head-reset fine-tune, 3 seeds, ~1 h 45 min, 1 worker, BelowNormal) is ready; the user wants it run, and planned for ~22:00 tonight, after Zodi's 1000-epoch test, on the hub's go (RAM is tight now).
+R4: proton-head-reset fine-tune, 3 seeds in sequence + analysis, 1 worker at BelowNormal. Started 22:54, expected ~00:45.
 
 ## Waiting on user
 1. After R4: probabilistic forecasts or GOES-18 data first?
