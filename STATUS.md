@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-30, DESKTOP-BBASC81
+Updated: 2026-10-30 21:50, DESKTOP-BBASC81
 
 ## Headline
 R4 done. Resetting the proton output head before fine-tuning keeps the X-ray gain and recovers ~40% of the small proton cost of synthetic pre-training. This model has the lowest validation error, so it is the new best: −13.8% X-ray error vs persistence (−22.8% during flares), −1.4% vs the real-only physics CNN.
@@ -20,7 +20,7 @@ Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in
 | + proton head reset (R4) | 0.1530 ± 0.0006 | 0.176 | 0.1206 ± 0.0003 | 2.8e-4 | 0.349 ± 0.002 |
 
 ## Running now
-Nothing. P1 (probabilistic forecasts) is coded, tested and dry-run; planned for ~22:00 tonight after Zodi round 38 finishes, on the hub's go (1 Julia process, ~3 GB, ~45 min, BelowNormal).
+P1: probabilistic forecasts (quantile head on the frozen R4 trunk, 3 seeds in one process), 1 thread, BelowNormal, ~3 GB. Started 21:48, expected ~22:35.
 
 ## Waiting on user
 Nothing (the user chose probabilistic forecasts; launch timing is up to the hub).
