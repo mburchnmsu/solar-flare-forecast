@@ -19,6 +19,7 @@ include("windows.jl")
 include("model.jl")
 include("train.jl")
 include("metrics.jl")
+include("probabilistic.jl")
 include("plots.jl")
 
 export TelemetryConfig, generate_telemetry, flare_class, XRAY_CLASS_FLOOR, SEP_THRESHOLD_PFU
@@ -27,6 +28,8 @@ export load_ncei, read_xrs_nc, read_sgps_nc, integral_above
 export Standardizer, log_features, standardize, to_log10, Windows, prepare_data, window_with
 export ResidualForecaster, build_model, PhysicsLoss, physics_terms, total_loss, regime_gates
 export train_model, predict, persistence, targets_from, evaluate, tss
+export QUANTILE_LEVELS, QuantileHead, build_quantile_head, trunk_features, pinball, train_quantile_head, predict_quantiles
+export EmpiricalQuantiles, apply_quantiles, exceed_prob, brier, reliability, score_quantiles
 export plot_telemetry, plot_training, plot_skill_vs_horizon, plot_forecast_examples, MODEL_COLORS
 
 end

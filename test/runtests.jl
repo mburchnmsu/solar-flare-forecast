@@ -29,4 +29,11 @@ using Test, SolarFlareForecast, Flux, Statistics, DataFrames
     pers = persistence(data.test)
     @test predict(ft, data.test.X)[:, 2, :] == pers[:, 2, :]                 # proton head back at persistence
     @test predict(ft, data.test.X)[:, 1, :] == predict(trained, data.test.X)[:, 1, :]  # X-ray head kept
+
+    @test exceed_prob(Float32[-1, -0.5, 0, 0.5, 1], QUANTILE_LEVELS, 0.0) ≈ 0.5 atol = 1e-6   # median
+    @test exceed_prob(Float32[-1, -0.5, 0, 0.5, 1], QUANTILE_LEVELS, 1.0) ≈ 0.05 atol = 1e-6  # 95th percentile
+    F, P = trunk_features(trained, data.test.X)
+    @test P ≈ predict(trained, data.test.X)                                  # features reproduce the point forecast
+    q = predict_quantiles(build_quantile_head(12), F, P)
+    @test all(diff(q; dims = 3) .>= 0) && q[:, :, 3, :] ≈ P                # ordered, median starts at the point forecast
 end

@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-10-30 00:15, DESKTOP-BBASC81
+Updated: 2026-10-30, DESKTOP-BBASC81
 
 ## Headline
 R4 done. Resetting the proton output head before fine-tuning keeps the X-ray gain and recovers ~40% of the small proton cost of synthetic pre-training. This model has the lowest validation error, so it is the new best: −13.8% X-ray error vs persistence (−22.8% during flares), −1.4% vs the real-only physics CNN.
@@ -20,10 +20,10 @@ Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in
 | + proton head reset (R4) | 0.1530 ± 0.0006 | 0.176 | 0.1206 ± 0.0003 | 2.8e-4 | 0.349 ± 0.002 |
 
 ## Running now
-Nothing. R4 ran 22:54–23:58 on 2026-10-29.
+Nothing. P1 (probabilistic forecasts) is coded, tested and dry-run; waiting for the hub's timing (1 Julia process, ~3 GB, ~45 min, BelowNormal).
 
 ## Waiting on user
-1. Next direction: probabilistic forecasts (quantile/ensemble, Brier skill) or GOES-18 data (more years, cross-satellite test)?
+Nothing (the user chose probabilistic forecasts; launch timing is up to the hub).
 
 ## Next up
-Depends on the choice above. README, REPORT (R4), onboarding notebook and CV_BULLETS.md are updated with R4.
+P1: a quantile head (5/25/50/75/95%) on the frozen trunk of each R4 seed, vs static error bars on persistence and on the R4 point model. Scores: pinball loss, 50/90% interval coverage and width (quiet vs active), Brier skill for ≥M1 and ≥S1 within 60 min, reliability diagram.
