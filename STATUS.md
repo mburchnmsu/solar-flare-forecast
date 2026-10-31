@@ -20,7 +20,7 @@ Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in
 | + proton head reset (R4) | 0.1530 ± 0.0006 | 0.176 | 0.1206 ± 0.0003 | 2.8e-4 | 0.349 ± 0.002 |
 
 ## Running now
-Nothing. P1 (probabilistic forecasts) is coded, tested and dry-run; waiting for the hub's timing (1 Julia process, ~3 GB, ~45 min, BelowNormal).
+Nothing. P1 (probabilistic forecasts) is coded, tested and dry-run; planned for ~22:00 tonight after Zodi round 38 finishes, on the hub's go (1 Julia process, ~3 GB, ~45 min, BelowNormal).
 
 ## Waiting on user
 Nothing (the user chose probabilistic forecasts; launch timing is up to the hub).
