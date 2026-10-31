@@ -243,3 +243,33 @@ persistence, while the shared trunk and the X-ray head keep the synthetic prior.
 4. **New best model (chosen on validation):** `real_physp_1e4_0.01_ft-physp_1e4_0.01_s1-pr`. The remaining proton
    gap could be closed by a per-channel model (separate proton trunk) or by pre-training on a generator with more
    realistic SEPs. Neither is worth it for 0.0016 dex.
+
+## Probabilistic forecasts P1: learned quantile head (2026-10-30)
+
+**Setup.** A small quantile head (Dense 128→64→2H×5, monotone by construction) predicts the 5/25/50/75/95% levels
+for every lead time and channel. It sits on the *frozen* trunk of each R4 seed, so the point forecast is unchanged.
+It is trained with the pinball loss on the training split and early-stopped on validation. Baselines: static error
+bars (quantiles of validation residuals per lead time, channel and quiet/active regime) on persistence and on the same
+R4 point model. Test scored once, 3 seeds. Event probabilities for "≥M1 / ≥S1 within 60 min" come from the quantiles as
+max over lead times of P(exceed). Brier skill is relative to the validation base rates (0.123 and 0.097).
+Script: `sweeps/probabilistic_real.jl`; runtime 14 min for all 3 seeds, 1 thread.
+
+| Test, dex | Pinball X | Pinball X, quiet | Pinball X, active | Pinball P | 90% cover X | 50% cover X | 90% width X, active | 90% cover P | BSS ≥M1 | BSS ≥M1, new | BSS ≥S1 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Persistence + static bars | 0.0330 | 0.0264 | 0.0465 | 0.0382 | 0.911 | 0.526 | 0.676 | 0.880 | 0.311 | 0.040 | 0.917 |
+| R4 + static bars | 0.0287 ± 0.0004 | 0.0256 | 0.0353 | 0.0288 | 0.915 | 0.531 | 0.526 | 0.881 | 0.317 ± 0.002 | 0.046 | 0.922 |
+| **R4 + learned quantile head** | **0.0279 ± 0.0001** | **0.0251** | **0.0339** | **0.0283** | 0.925 | 0.555 | **0.461** | 0.868 | **0.325 ± 0.001** | **0.056** | **0.930** |
+
+**Conclusions**
+1. **Learned uncertainty beats static error bars** on every seed: X-ray pinball −2.7% vs the same model with static
+   bars, and −15.3% vs persistence with static bars. The gain is largest in active periods (−4.0%), where the
+   uncertainty really depends on the flare state.
+2. **Sharper where it matters:** during flares the learned 90% interval is 12% narrower (0.46 vs 0.53 dex) at the same
+   coverage (0.912 vs 0.918). In the fan charts it is asymmetric during decays (more room below than above), as cooling
+   physics suggests.
+3. **Calibration is close, but not exact:** the X-ray intervals are slightly too wide (90% → 0.925, 50% → 0.555), and
+   the proton 90% interval is slightly too narrow (0.868). Every method under-forecasts event probabilities in the
+   reliability diagram, most strongly for S1. That is expected from the max-over-lead-times lower bound. Next fix:
+   recalibrate event probabilities on validation (isotonic), or predict the event probability directly.
+4. **Onsets remain the hard part:** Brier skill for *new* M-class crossings is only 0.056 (vs 0.040 for persistence
+   with static bars), consistent with the TSS result. Probabilities help most in flare evolution, not in onset.

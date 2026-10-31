@@ -31,6 +31,15 @@ validation. All CNNs beat persistence on protons by 24–26%. The test period in
 against NOAA: XRS-B matches SWPC real-time to 0.001 dex (median), and the ≥10 MeV integral reconstructed from the SGPS
 differential channels matches the peaks in NOAA's 2024 SEP list with a median ratio of 1.19 (n = 8).
 
+### Probabilistic forecasts (quantile head on the best model; same test split, 3 seeds)
+
+A small head on the frozen network predicts the 5/25/50/75/95% levels of every forecast minute. It beats static
+error bars on the same model (X-ray pinball loss 0.0279 vs 0.0287 dex; −15% vs persistence with static bars). During
+flares its 90% interval is 12% narrower at the same ~91% coverage. Event probabilities for ≥M1 and ≥S1 within the hour
+have the best Brier skill (0.325 and 0.930), but they are biased low, so recalibration is the next step.
+
+![probabilistic forecast examples](figures/prob_examples.png)
+
 ### Synthetic development data (noise-free truth available; 3 seeds)
 
 | Model | X-ray RMSE (dex) | X-ray, active periods | Quiet-time roughness | TSS, ≥M within 60 min |

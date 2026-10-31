@@ -1,29 +1,29 @@
 # SolarFlareForcast status
-Updated: 2026-10-30 21:50, DESKTOP-BBASC81
+Updated: 2026-10-30 22:10, DESKTOP-BBASC81
 
 ## Headline
-R4 done. Resetting the proton output head before fine-tuning keeps the X-ray gain and recovers ~40% of the small proton cost of synthetic pre-training. This model has the lowest validation error, so it is the new best: −13.8% X-ray error vs persistence (−22.8% during flares), −1.4% vs the real-only physics CNN.
+P1 done: probabilistic forecasts work. A learned quantile head on the best model beats static error bars on every seed (X-ray pinball −2.7%, −15% vs persistence), and during flares its 90% intervals are 12% narrower at the same coverage. Event probabilities are biased low, so recalibration is next.
 
 ## Best model
-`real_physp_1e4_0.01_ft-physp_1e4_0.01_s1-pr` (3 seeds): residual 1D-CNN (180 min → 60 min), physics loss λ = 1e4 with proton terms × 0.01, pre-trained on synthetic telemetry, proton output head reset, fine-tuned on real GOES-16 NCEI L2 data 2022-04 → 2023-12.
-Real test: X-ray RMSE 0.1530 ± 0.0006 dex (persistence 0.1776, plain CNN 0.1569 ± 0.0006); active 0.176; protons 0.1206 ± 0.0003 (persistence 0.159); quiet roughness 2.8e-4 dex/min²; TSS ≥M 0.349 ± 0.002.
+Point: `real_physp_1e4_0.01_ft-physp_1e4_0.01_s1-pr` (3 seeds): residual 1D-CNN (180 min → 60 min), physics loss λ = 1e4 with proton terms × 0.01, pre-trained on synthetic telemetry, proton output head reset, fine-tuned on real GOES-16 NCEI L2 data 2022-04 → 2023-12. Real test: X-ray RMSE 0.1530 ± 0.0006 dex (persistence 0.1776); active 0.176; protons 0.1206 ± 0.0003 (persistence 0.159); TSS ≥M 0.349 ± 0.002.
+Probabilistic: the same model + learned 5/25/50/75/95% quantile head. X-ray pinball 0.0279 ± 0.0001 dex; 90% interval coverage 0.925; Brier skill ≥M1 0.325, ≥S1 0.930.
 
 ## Latest results
-Real GOES-16 test split (2024-07 → 2025-03), mean ± std over 3 seeds, RMSE in dex vs observations:
+P1, real GOES-16 test split (2024-07 → 2025-03), mean over 3 seeds, dex:
 
-| Model | X-ray | X-ray active | Protons | Quiet roughness | TSS ≥M |
-|---|---|---|---|---|---|
-| Persistence | 0.1776 | 0.228 | 0.159 | 0 | 0.33 |
-| CNN (MSE) | 0.1569 ± 0.0006 | 0.181 | 0.118 | 6.0e-4 | 0.336 ± 0.002 |
-| CNN + physics | 0.1552 ± 0.0006 | 0.179 | 0.119 | 3.0e-4 | 0.341 ± 0.010 |
-| + fine-tuned from synthetic (R3) | 0.1533 ± 0.0005 | 0.177 | 0.122 ± 0.001 | 2.3e-4 | 0.345 ± 0.006 |
-| + proton head reset (R4) | 0.1530 ± 0.0006 | 0.176 | 0.1206 ± 0.0003 | 2.8e-4 | 0.349 ± 0.002 |
+| Model | Pinball X | Pinball X, active | 90% cover X | 90% width X, active | BSS ≥M1 | BSS ≥S1 |
+|---|---|---|---|---|---|---|
+| Persistence + static bars | 0.0330 | 0.0465 | 0.911 | 0.676 | 0.311 | 0.917 |
+| Best model + static bars | 0.0287 ± 0.0004 | 0.0353 | 0.915 | 0.526 | 0.317 | 0.922 |
+| Best model + learned head | 0.0279 ± 0.0001 | 0.0339 | 0.925 | 0.461 | 0.325 | 0.930 |
+
+Point-forecast table (R1–R4) is in README.md and sweeps/REPORT.md.
 
 ## Running now
-P1: probabilistic forecasts (quantile head on the frozen R4 trunk, 3 seeds in one process), 1 thread, BelowNormal, ~3 GB. Started 21:48, expected ~22:35.
+Nothing. P1 ran 21:43–21:57. Claude Code's low-memory safeguard reaped its wrapper shell, but the Julia job finished normally.
 
 ## Waiting on user
-Nothing (the user chose probabilistic forecasts; launch timing is up to the hub).
+1. Next: recalibrate event probabilities (cheap, analysis only), GOES-18 data, or wrap up the write-up?
 
 ## Next up
-P1: a quantile head (5/25/50/75/95%) on the frozen trunk of each R4 seed, vs static error bars on persistence and on the R4 point model. Scores: pinball loss, 50/90% interval coverage and width (quiet vs active), Brier skill for ≥M1 and ≥S1 within 60 min, reliability diagram.
+Isotonic recalibration of the ≥M1 / ≥S1 probabilities on validation (no training needed). Onboarding notebook and CV bullets are updated with P1.
