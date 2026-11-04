@@ -1,7 +1,7 @@
 # CV bullets
 
-Numbers are from the real GOES-16 test split (Jul 2024 – Mar 2025, sealed; mean of 3 seeds), see `sweeps/REPORT.md` R1–R4 and P1.
-Updated 2026-10-30 (best model: R4, proton-head reset; probabilistic: P1).
+Numbers are from the real GOES-16 test split (Jul 2024 – Mar 2025, sealed; mean of 3 seeds), see `sweeps/REPORT.md` R1–R4, P1, C1 and G1.
+Updated 2026-11-04 (best model: R4, proton-head reset; probabilistic: P1 + C1 recalibration; GOES-18: G1).
 
 **Physics-Constrained Solar Flare & SEP Forecasting** (independent project; Julia, Flux.jl, CairoMakie)
 
@@ -9,6 +9,7 @@ Updated 2026-10-30 (best model: R4, proton-head reset; probabilistic: P1).
   cadence. On 9 months of held-out GOES-16 data, including the Oct 2024 X9.0 flare, it cuts X-ray forecast error by
   14% vs the operational persistence baseline (23% during flares) and proton error by 24%. A learned quantile head adds
   probabilistic forecasts that beat static error bars, with 12% narrower 90% intervals during flares at equal coverage.
+  The X-ray gain holds unchanged on a second satellite (GOES-18) and on 19 months of later data (Apr 2025 – Oct 2026).
 - Designed a physics-informed loss (one-sided plasma-cooling bound, regime-gated quiet-Sun curvature, decay-phase
   convexity), validated by ablation on Hawkes-process synthetic telemetry. Pre-training on the simulator and
   fine-tuning on real data beat real-only training by 1.4% (>3σ across seeds), with quiet-period forecasts 53% smoother

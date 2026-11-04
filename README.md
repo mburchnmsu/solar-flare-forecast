@@ -41,6 +41,19 @@ their Brier skill to 0.350 (≥M1) and 0.958 (≥S1), the best of all methods (`
 
 ![probabilistic forecast examples](figures/prob_examples.png)
 
+### A second satellite and 19 months of new data (GOES-18; 3 seeds)
+
+| RMSE, dex | X-ray: persistence | X-ray: best model | Protons: persistence | Protons: best model |
+|---|---|---|---|---|
+| GOES-16 test, 2024-07 → 2025-03 | 0.1776 | 0.1530 (−13.8%) | 0.1594 | 0.1206 (−24.3%) |
+| GOES-18, same period (never trained on) | 0.1761 | 0.1521 (−13.6%) | 0.1580 | 0.1190 (−24.7%) |
+| GOES-18, 2025-04 → 2026-10 (after all training data) | 0.1630 | 0.1411 (−13.4%) | 0.1647 | 0.1318 (−20.0%) |
+
+The model trained on GOES-16 alone keeps its skill on another satellite and on 19 months of later data, including
+the Jan 2026 radiation storm. Adding GOES-18 to training (76% more windows) leaves the X-ray error unchanged (within
+1σ); it helps only the protons in the new period (0.1266 vs 0.1318 dex), possibly in part because GOES-18's proton
+channel reads ~19% lower than GOES-16's during events and it is now in training.
+
 ### Synthetic development data (noise-free truth available; 3 seeds)
 
 | Model | X-ray RMSE (dex) | X-ray, active periods | Quiet-time roughness | TSS, ≥M within 60 min |

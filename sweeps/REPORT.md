@@ -295,3 +295,44 @@ validation base rates, as in P1. Script: `sweeps/recalibrate_real.jl`; runtime 6
 3. **≥M1 is still low on average** (0.098 vs 0.129) even though the mid-range bins now sit on or slightly above the
    diagonal. The shortfall is in the lowest bin, where most windows sit: quiet windows that go on to flare (missed
    onsets). A small part is a base-rate shift (≥M1 within 60 min: 0.123 of validation windows, 0.129 of test).
+
+## GOES-18 G1: second satellite, more data, and a new out-of-time test (2026-11-03)
+
+**Data.** GOES-18 NCEI L2 (same loader and quality filters as GOES-16), 2022-09-13 → 2026-10-18 (the 2026 XRS file
+ends there): 2.11 M minutes (97.1% coverage), max X8.8, protons ≥10 pfu in 2.9% of minutes, max 43,893 pfu
+(2026-01-19; not yet checked against NOAA's event list). Splits as for GOES-16 (train → 2023-12, val 2024-01 → 06,
+test 2024-07 → 2025-03) plus **new = 2025-04 → 2026-10**, which is after all training and selection data.
+
+**Instrument cross-check** (1.28 M matched minutes, log ratio GOES-18 / GOES-16): XRS-B median +0.0004 dex (IQR 0.008),
+−0.004 dex at ≥M1. Protons +0.005 dex overall but −0.094 dex (GOES-18 ~19% lower) when GOES-16 reads ≥10 pfu
+(`results/g18_crosscal.csv`). So the X-ray channels are interchangeable; the proton channels differ during SEPs.
+
+**Models.** R4 (trained on GOES-16 only), scored zero-shot on GOES-18; G1 = the R4 recipe (synthetic pre-training →
+proton head reset → real fine-tune) trained on GOES-16 + GOES-18 training windows (166k + 126k) and early-stopped on
+the pooled validation windows. 3 seeds each; 11–15 epochs, ~25 min per seed, 4.8 GB, 1 thread.
+Scripts: `sweeps/g18.jl`, `sweeps/train_g18.jl`, `sweeps/analyze_g18.jl`.
+
+| Test set, RMSE dex | Model | X-ray | X-ray, active | Protons | TSS ≥M | TSS ≥S1 |
+|---|---|---|---|---|---|---|
+| GOES-16, 2024-07 → 2025-03 | Persistence | 0.1776 | 0.2281 | 0.1594 | 0.329 | 0.882 |
+| | R4 (GOES-16 only) | 0.1530 ± 0.0006 | 0.1760 | 0.1206 ± 0.0003 | 0.349 | 0.904 |
+| | G1 (GOES-16 + 18) | 0.1527 ± 0.0001 | 0.1755 | 0.1208 ± 0.0005 | 0.345 | 0.902 |
+| GOES-18, same period | Persistence | 0.1761 | 0.2267 | 0.1580 | 0.333 | 0.876 |
+| | R4 (zero-shot) | 0.1521 ± 0.0005 | 0.1754 | 0.1190 ± 0.0005 | 0.355 | 0.893 |
+| | G1 | 0.1516 ± 0.0002 | 0.1749 | 0.1191 ± 0.0002 | 0.350 | 0.890 |
+| **GOES-18, new 2025-04 → 2026-10** | Persistence | 0.1630 | 0.2295 | 0.1647 | 0.323 | 0.801 |
+| | R4 (zero-shot) | 0.1411 ± 0.0004 | 0.1772 | 0.1318 ± 0.0018 | 0.344 | 0.822 |
+| | G1 | 0.1411 ± 0.0002 | 0.1768 | **0.1266 ± 0.0007** | 0.341 | 0.819 |
+
+**Conclusions**
+1. **The model transfers to another satellite unchanged:** R4, trained only on GOES-16, beats persistence on GOES-18 by
+   the same margin (X-ray −13.6%, protons −24.7%) as on GOES-16 (−13.8%, −24.3%).
+2. **The skill holds out of time.** On 19 months after all training data (151k windows, including the Jan 2026 SEP),
+   R4 is −13.4% on X-ray and −20% on protons vs persistence, and −23% in active periods.
+3. **76% more training data does not improve the X-ray forecast** (G1 vs R4 within 1σ everywhere; TSS slightly lower).
+   The X-ray error is not data-limited at this model size; the remaining error is mostly onsets, which no input in
+   the last 3 h predicts well.
+4. **Protons do improve in the new period** with GOES-18 in training: 0.1266 vs 0.1318 (−3.9%, 2.7σ across seeds). That period is
+   scored on GOES-18, whose proton channel reads ~19% lower than GOES-16 during events, so part of this may be
+   learning the instrument rather than the physics.
+5. R4 stays the headline model: equal on X-ray, simpler (one satellite), and selected on the original validation split.

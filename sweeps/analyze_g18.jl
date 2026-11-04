@@ -2,7 +2,7 @@
 #   GOES-16 test 2024-07 → 2025-03 (the R-series protocol), GOES-18 over the same period (another instrument), and
 #   GOES-18 2025-04 → 2026-10 (out-of-time: after all training/selection data). Scored against observations, dex.
 #     julia -t 1 --project=. sweeps/analyze_g18.jl
-# Output: results/g18_metrics.csv, results/g18_summary.csv, results/g18_xrs_crosscal.csv
+# Output: results/g18_metrics.csv, results/g18_summary.csv, results/g18_crosscal.csv
 include(joinpath(@__DIR__, "g18.jl"))
 
 r4 = "real_physp_1e4_0.01_ft-physp_1e4_0.01_s1-pr"
@@ -16,14 +16,14 @@ df18, d18 = g18_windows(scaler)
 println("R4 seeds ", length(R4), ", G1 seeds ", length(G1), "; test windows: G16 ", length(d16.test), ", G18 ",
         length(d18.test), ", G18 new ", length(d18.new))
 
-# instrument cross-check: GOES-18 vs GOES-16 XRS-B over the minutes both have (log ratio, dex)
-j = innerjoin(select(df16, :time, :xray => :x16), select(df18, :time, :xray => :x18); on = :time)
+# instrument cross-check: GOES-18 vs GOES-16 over the minutes both have (log ratio GOES-18 / GOES-16, dex)
+j = innerjoin(select(df16, :time, :xray => :x16, :proton => :p16), select(df18, :time, :xray => :x18, :proton => :p18); on = :time)
 iqrange(v) = quantile(v, 0.75) - quantile(v, 0.25)
-lr = log10.(j.x18) .- log10.(j.x16)
-flare = j.x16 .>= 1e-5
-cc = DataFrame(subset = ["all", "≥M1 (GOES-16)"], minutes = [nrow(j), count(flare)],
-               median_dex = [median(lr), median(lr[flare])], iqr_dex = [iqrange(lr), iqrange(lr[flare])])
-open(io -> show(io, MIME("text/csv"), cc), joinpath(RESULTS_DIR, "g18_xrs_crosscal.csv"), "w")
+lx, lp = log10.(j.x18) .- log10.(j.x16), log10.(j.p18) .- log10.(j.p16)
+subsets = [("XRS-B, all", lx, trues(nrow(j))), ("XRS-B, ≥M1 (GOES-16)", lx, j.x16 .>= 1e-5),
+           ("Protons, all", lp, trues(nrow(j))), ("Protons, ≥10 pfu (GOES-16)", lp, j.p16 .>= 10)]
+cc = DataFrame([(; subset = n, minutes = count(m), median_dex = median(v[m]), iqr_dex = iqrange(v[m])) for (n, v, m0) in subsets for m in (m0 .& isfinite.(v),)])
+open(io -> show(io, MIME("text/csv"), cc), joinpath(RESULTS_DIR, "g18_crosscal.csv"), "w")
 show(stdout, cc; eltypes = false); println()
 
 const KEYS = (:rmse_x, :rmse_x_quiet, :rmse_x_active, :rmse_p, :rough_quiet, :tss_m, :tss_m_new, :tss_s1)
