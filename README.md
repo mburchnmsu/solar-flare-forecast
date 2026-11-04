@@ -36,7 +36,8 @@ differential channels matches the peaks in NOAA's 2024 SEP list with a median ra
 A small head on the frozen network predicts the 5/25/50/75/95% levels of every forecast minute. It beats static
 error bars on the same model (X-ray pinball loss 0.0279 vs 0.0287 dex; −15% vs persistence with static bars). During
 flares its 90% interval is 12% narrower at the same ~91% coverage. Event probabilities for ≥M1 and ≥S1 within the hour
-have the best Brier skill (0.325 and 0.930), but they are biased low, so recalibration is the next step.
+are biased low as they come out of the quantiles; an isotonic map fit on validation fixes most of that and raises
+their Brier skill to 0.350 (≥M1) and 0.958 (≥S1), the best of all methods (`figures/recal_reliability.png`).
 
 ![probabilistic forecast examples](figures/prob_examples.png)
 

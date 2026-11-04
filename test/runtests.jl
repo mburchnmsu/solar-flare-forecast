@@ -32,6 +32,8 @@ using Test, SolarFlareForecast, Flux, Statistics, DataFrames
 
     @test exceed_prob(Float32[-1, -0.5, 0, 0.5, 1], QUANTILE_LEVELS, 0.0) ≈ 0.5 atol = 1e-6   # median
     @test exceed_prob(Float32[-1, -0.5, 0, 0.5, 1], QUANTILE_LEVELS, 1.0) ≈ 0.05 atol = 1e-6  # 95th percentile
+    cal = IsotonicCalibration([0.1, 0.2, 0.3, 0.4], [false, true, false, true])
+    @test cal.y == [0.0, 0.5, 1.0] && cal(0.0) == 0.0 && cal(1.0) == 1.0 && issorted(cal(0:0.05:1))   # PAV pools the violator
     F, P = trunk_features(trained, data.test.X)
     @test P ≈ predict(trained, data.test.X)                                  # features reproduce the point forecast
     q = predict_quantiles(build_quantile_head(12), F, P)

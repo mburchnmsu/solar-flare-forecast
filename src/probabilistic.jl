@@ -210,6 +210,42 @@ function brier(p::AbstractVector, o::AbstractVector{Bool}, clim::Real)
     return (; bs, bss = 1 - bs / ref)
 end
 
+"""
+    IsotonicCalibration(p, o)
+
+Isotonic (pool-adjacent-violators) map from forecast probability `p` to observed frequency of `o`, fit on one split
+and applied to another. Calling it interpolates linearly between the block means and clamps outside them.
+"""
+struct IsotonicCalibration
+    x::Vector{Float64}             # block mean forecast probability (increasing)
+    y::Vector{Float64}             # block observed frequency (non-decreasing)
+end
+
+function IsotonicCalibration(p::AbstractVector, o::AbstractVector{Bool})
+    idx = sortperm(p)
+    xs, ys, ws = Float64[], Float64[], Float64[]
+    for i in idx
+        push!(xs, p[i]); push!(ys, o[i]); push!(ws, 1.0)
+        while length(ys) > 1 && ys[end-1] >= ys[end]
+            w = ws[end-1] + ws[end]
+            xs[end-1] = (ws[end-1] * xs[end-1] + ws[end] * xs[end]) / w
+            ys[end-1] = (ws[end-1] * ys[end-1] + ws[end] * ys[end]) / w
+            ws[end-1] = w
+            pop!(xs); pop!(ys); pop!(ws)
+        end
+    end
+    return IsotonicCalibration(xs, ys)
+end
+
+function (c::IsotonicCalibration)(p::Real)
+    x, y = c.x, c.y
+    p <= x[1] && return y[1]
+    p >= x[end] && return y[end]
+    k = searchsortedlast(x, p)
+    return y[k] + (y[k+1] - y[k]) * (p - x[k]) / (x[k+1] - x[k])
+end
+(c::IsotonicCalibration)(p::AbstractVector) = c.(p)
+
 "Reliability table: mean forecast probability vs observed frequency in `nbins` equal-width bins."
 function reliability(p::AbstractVector, o::AbstractVector{Bool}; nbins::Int = 10)
     edges = range(0, 1; length = nbins + 1)

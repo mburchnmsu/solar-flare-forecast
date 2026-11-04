@@ -29,7 +29,7 @@ export Standardizer, log_features, standardize, to_log10, Windows, prepare_data,
 export ResidualForecaster, build_model, PhysicsLoss, physics_terms, total_loss, regime_gates
 export train_model, predict, persistence, targets_from, evaluate, tss
 export QUANTILE_LEVELS, QuantileHead, build_quantile_head, trunk_features, pinball, train_quantile_head, predict_quantiles
-export EmpiricalQuantiles, apply_quantiles, exceed_prob, brier, reliability, score_quantiles
+export EmpiricalQuantiles, apply_quantiles, exceed_prob, brier, reliability, score_quantiles, IsotonicCalibration
 export plot_telemetry, plot_training, plot_skill_vs_horizon, plot_forecast_examples, MODEL_COLORS
 
 end

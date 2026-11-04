@@ -273,3 +273,25 @@ Script: `sweeps/probabilistic_real.jl`; runtime 14 min for all 3 seeds, 1 thread
    recalibrate event probabilities on validation (isotonic), or predict the event probability directly.
 4. **Onsets remain the hard part:** Brier skill for *new* M-class crossings is only 0.056 (vs 0.040 for persistence
    with static bars), consistent with the TSS result. Probabilities help most in flare evolution, not in onset.
+
+## Probabilistic forecasts C1: isotonic recalibration of event probabilities (2026-11-03)
+
+**Setup.** No training. The P1 quantile heads and static error bars are reloaded. For each method and seed, an
+isotonic (pool-adjacent-violators) map from forecast probability to observed frequency is fit on the *validation*
+probabilities of "≥M1 / ≥S1 within 60 min", then applied to test, which is scored once. Brier skill is relative to the
+validation base rates, as in P1. Script: `sweeps/recalibrate_real.jl`; runtime 6 min, 1 thread.
+
+| Test, Brier skill (raw → recalibrated) | ≥M1 | ≥M1, new crossings | ≥S1 | Mean P(≥M1) (observed 0.129) |
+|---|---|---|---|---|
+| Persistence + static bars | 0.311 → 0.328 | 0.040 → 0.064 | 0.917 → 0.951 | 0.073 → 0.098 |
+| R4 + static bars | 0.317 → 0.344 ± 0.003 | 0.046 → 0.084 | 0.922 → 0.957 | 0.069 → 0.101 |
+| **R4 + learned quantile head** | 0.325 → **0.350 ± 0.001** | 0.056 → **0.089** | 0.930 → **0.958** | 0.070 → 0.098 |
+
+**Conclusions**
+1. **Recalibration helps every method and both events.** The learned head stays best (≥M1 Brier skill 0.350 vs 0.344
+   for static bars and 0.328 for persistence), and the onset skill rises by 60% (0.056 → 0.089), though it stays low.
+2. **≥S1 is now well calibrated** (`figures/recal_reliability.png`): the raw probabilities were far too low (the
+   max-over-lead-times lower bound), and the isotonic map fixes that. Mean P(≥S1) 0.047 vs observed 0.047.
+3. **≥M1 is still low on average** (0.098 vs 0.129) even though the mid-range bins now sit on or slightly above the
+   diagonal. The shortfall is in the lowest bin, where most windows sit: quiet windows that go on to flare (missed
+   onsets). A small part is a base-rate shift (≥M1 within 60 min: 0.123 of validation windows, 0.129 of test).
