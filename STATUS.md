@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-11-08 23:40, DESKTOP-BBASC81 (ThinkPad)
+Updated: 2026-11-09 00:50, DESKTOP-BBASC81 (ThinkPad)
 
 ## Headline
 G1 done: the best model (trained on GOES-16 only) keeps its skill on GOES-18 and on 19 months of new data (2025-04 → 2026-10): X-ray −13.4%, protons −20% vs persistence. Training on both satellites (76% more data) doesn't improve the X-ray forecast. C1 recalibration also done tonight.
@@ -20,10 +20,11 @@ G1, RMSE dex, mean over 3 seeds (R4 = GOES-16 only; G1 = trained on GOES-16 + GO
 GOES-18 vs GOES-16: XRS-B agrees to 0.0004 dex; protons read ~19% lower on GOES-18 during SEPs. C1 (recalibrated Brier skill) is in sweeps/REPORT.md.
 
 ## Running now
-Sweep-2 error bars (future-work #6, overnight window via the hub): seeds 2–3 of physp_1e4_0.01, rough_1e4, physp_1e4_0 on synthetic data, one at a time at BelowNormal (~1.8 GB, 1 thread, ~20 min each), started 23:35, then sweeps/analyze.jl. Expected finish ~01:45.
+Nothing. Overnight window (2026-11-08/09): GOES-18 SEP check, write-up, and sweep-2 seeds 2–3 (6 synthetic runs, 23:35 → 00:35) all done.
 
 ## Waiting on user
-Nothing.
+1. Next direction? Everything planned is done. Open options from the onboarding notebook, each a scope decision: XRS-A two-channel thermodynamics (temperature / emission-measure constraint), SEP connectivity (flare longitude as an input), gating the convexity prior by flare-to-background ratio, and which program the write-up targets.
+2. Paste the C1 + G1 cells into SolOnboarding.ipynb (given in the session).
 
 ## Next up
-SEP check done 2026-11-08 (GOES-18 vs NOAA: median ratio 0.82, 10 events; the 2026-01-19 event is real, NOAA 36,976 pfu). Onboarding notebook cells for C1 + G1 are ready to paste. Then: sweep-2 error bars into REPORT.
+Sweep-2 error bars done: the seed-1 findings hold (per-channel weighting fixes the proton collapse on every seed; the curvature term carries the X-ray gain; × 0.01 vs × 0 not resolved). SEP check: GOES-18 vs NOAA median ratio 0.82 (10 events); the 2026-01-19 event is real (NOAA 36,976 pfu).
