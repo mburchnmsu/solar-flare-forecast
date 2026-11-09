@@ -346,3 +346,25 @@ SEPs; GOES-16 read 1.19× NOAA in 2024). The 2026-01-19 event is real: NOAA 36,9
 at 19:21 (ratio 1.09), the largest ≥10 MeV event in the data. Peak times agree within 30 min for 7 of 10 events;
 the exceptions are near-threshold or multi-peak (2025-01-05, 2025-04-01, 2025-08-27). So the proton channel has a
 satellite-dependent calibration of ±20% that the model must absorb; the X-ray channel does not.
+
+# Sweep 2 error bars: seeds 2–3 of the closest variants (2026-11-09)
+
+Seeds 2–3 of `physp_1e4_0.01`, `physp_1e4_0` and `rough_1e4`, same synthetic data and protocol as sweep 2 (test split,
+RMSE vs noise-free truth, dex). 6 runs, one at a time, ~10 min each, 1 thread. `sweeps/analyze.jl` now skips the
+real-data run folders (they have their own analysis).
+
+| Variant (3 seeds) | val MSE | X-ray | X-ray active | Protons | Quiet roughness | TSS ≥M |
+|---|---|---|---|---|---|---|
+| Persistence | 0.1283 | 0.2676 | 0.377 | 0.0600 | 0 | 0.391 |
+| Physics, shared λ | 0.0963 | 0.2303 ± 0.0008 | 0.282 | 0.0599 ± 0.0000 | 1.5e-4 | 0.399 ± 0.006 |
+| **Physics, proton terms × 0.01** | 0.0962 | 0.2294 ± 0.0001 | 0.278 | 0.0555 ± 0.0013 | 3.1e-4 | 0.407 ± 0.008 |
+| Physics, proton terms × 0 | 0.0964 | 0.2288 ± 0.0012 | 0.275 | 0.0536 ± 0.0024 | 3.3e-4 | 0.421 ± 0.008 |
+| Quiet curvature only | **0.0955** | 0.2299 ± 0.0008 | 0.279 | 0.0598 ± 0.0001 | 1.6e-4 | 0.389 ± 0.004 |
+
+**Conclusions (the seed-1 findings hold)**
+1. **Per-channel weighting fixes the proton collapse, reproducibly:** 0.0555 ± 0.0013 (× 0.01) and 0.0536 ± 0.0024 (× 0)
+   vs 0.0598–0.0599 for the variants with full-weight proton terms, which sit at persistence (0.0600) on every seed.
+2. **The curvature term carries the X-ray gain:** curvature-only, × 0.01 and × 0 agree within 1σ (0.2288–0.2299).
+3. **× 0.01 vs × 0 is not resolved** (X-ray, protons and TSS all within ~1.2σ). Dropping the proton physics terms
+   entirely costs nothing measurable on synthetic data, so they are not a source of proton skill; the real-data choice
+   (× 0.01: best validation MSE among the variants that don't collapse protons) stands.

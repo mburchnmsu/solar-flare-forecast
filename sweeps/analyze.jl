@@ -17,6 +17,7 @@ const KEYS = (:rmse_x, :rmse_x_clean, :rmse_x_quiet, :rmse_x_active, :rmse_p, :r
 
 runs = Dict{String,Any}()
 for d in readdir(joinpath(@__DIR__, "results"); join = true)
+    any(p -> startswith(basename(d), p), ("real_", "g1618_", "prob_")) && continue   # real-data runs: analyze_real.jl
     f = joinpath(d, "run.jls")
     isfile(f) && (runs[basename(d)] = deserialize(f))
 end
