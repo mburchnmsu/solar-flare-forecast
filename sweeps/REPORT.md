@@ -344,5 +344,5 @@ has a median ratio of **0.82** and a scatter of 0.11 dex (`results/sep_peak_vali
 `sweeps/validate_sep_peaks_g18.jl`). That matches the cross-check above (GOES-18 reads ~19% below GOES-16 during
 SEPs; GOES-16 read 1.19× NOAA in 2024). The 2026-01-19 event is real: NOAA 36,976 pfu at 19:15 UT, GOES-18 40,300 pfu
 at 19:21 (ratio 1.09), the largest ≥10 MeV event in the data. Peak times agree within 30 min for 7 of 10 events;
-the exceptions are near-threshold or multi-peak (2025-04-01, 2025-08-27, 2026-07-30). So the proton channel has a
+the exceptions are near-threshold or multi-peak (2025-01-05, 2025-04-01, 2025-08-27). So the proton channel has a
 satellite-dependent calibration of ±20% that the model must absorb; the X-ray channel does not.
