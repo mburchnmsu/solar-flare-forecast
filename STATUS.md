@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-11-04 00:00, DESKTOP-BBASC81 (ThinkPad)
+Updated: 2026-11-08 23:40, DESKTOP-BBASC81 (ThinkPad)
 
 ## Headline
 G1 done: the best model (trained on GOES-16 only) keeps its skill on GOES-18 and on 19 months of new data (2025-04 → 2026-10): X-ray −13.4%, protons −20% vs persistence. Training on both satellites (76% more data) doesn't improve the X-ray forecast. C1 recalibration also done tonight.
@@ -20,10 +20,10 @@ G1, RMSE dex, mean over 3 seeds (R4 = GOES-16 only; G1 = trained on GOES-16 + GO
 GOES-18 vs GOES-16: XRS-B agrees to 0.0004 dex; protons read ~19% lower on GOES-18 during SEPs. C1 (recalibrated Brier skill) is in sweeps/REPORT.md.
 
 ## Running now
-Nothing. G1 trained 22:44 → 23:57 (3 seeds, 4.8 GB, 1 thread); scoring rerun after a fix, done 23:59.
+Sweep-2 error bars (future-work #6, overnight window via the hub): seeds 2–3 of physp_1e4_0.01, rough_1e4, physp_1e4_0 on synthetic data, one at a time at BelowNormal (~1.8 GB, 1 thread, ~20 min each), started 23:35, then sweeps/analyze.jl. Expected finish ~01:45.
 
 ## Waiting on user
 Nothing.
 
 ## Next up
-Write-up: onboarding notebook cells for C1 and G1 (paste-ready). Optional: check the 2026-01-19 SEP (43,893 pfu on GOES-18) against NOAA's event list.
+SEP check done 2026-11-08 (GOES-18 vs NOAA: median ratio 0.82, 10 events; the 2026-01-19 event is real, NOAA 36,976 pfu). Onboarding notebook cells for C1 + G1 are ready to paste. Then: sweep-2 error bars into REPORT.
