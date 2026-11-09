@@ -1,5 +1,5 @@
 # SolarFlareForcast status
-Updated: 2026-11-09 00:50, DESKTOP-BBASC81 (ThinkPad)
+Updated: 2026-11-09 00:37, DESKTOP-BBASC81 (ThinkPad)
 
 ## Headline
 G1 done: the best model (trained on GOES-16 only) keeps its skill on GOES-18 and on 19 months of new data (2025-04 → 2026-10): X-ray −13.4%, protons −20% vs persistence. Training on both satellites (76% more data) doesn't improve the X-ray forecast. C1 recalibration also done tonight.
