@@ -1,0 +1,6 @@
+physp_1e4_0.01 2
+physp_1e4_0.01 3
+rough_1e4 2
+rough_1e4 3
+physp_1e4_0 2
+physp_1e4_0 3
